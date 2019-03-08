@@ -30,6 +30,14 @@ class forward_list {
  public:  // non-modifying methods
   bool empty() const noexcept { return !uptr_head_.get(); }
 
+ public:  // modifying methods
+  template <class... Args>
+  void emplace_front(Args&&... args) {
+    auto uptr_new = std::make_unique<Node>(std::forward<Args>(args)...);
+    uptr_new->uptr_next.reset(uptr_head_.release());
+    uptr_new.swap(uptr_head_);
+  }
+
  private:
   std::unique_ptr<Node> uptr_head_{ nullptr };
 };

@@ -36,6 +36,11 @@ TEST_F(ForwardListTest, Empty) {
 
 TEST_F(ForwardListTest, EmplaceFront) {
   FAIL();
+  for (const auto& i : std_list_of_id) {
+    std_list_of_kitten.emplace_front(i);
+    pvc_list_of_kitten.emplace_front(i);
+  }
+  EXPECT_EQ(pvc_list_of_kitten.empty(), std_list_of_kitten.empty());
 }
 
 TEST_F(ForwardListTest, ListInitialize) {
