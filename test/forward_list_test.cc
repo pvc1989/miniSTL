@@ -50,10 +50,6 @@ TEST_F(ForwardListTest, Front) {
   }
 }
 
-TEST_F(ForwardListTest, ListInitialize) {
-  FAIL();
-}
-
 TEST_F(ForwardListTest, PopFront) {
   for (const auto& i : std_list_of_id) {
     std_list_of_kitten.emplace_front(i);
