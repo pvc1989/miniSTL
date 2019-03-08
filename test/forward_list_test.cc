@@ -62,19 +62,23 @@ TEST_F(ForwardListTest, PopFront) {
   }
 }
 
-TEST_F(ForwardListTest, BeginEnd) {
+TEST_F(ForwardListTest, Iterator) {
   for (const auto& i : std_list_of_id) {
-    std_list_of_kitten.emplace_front(i);
     pvc_list_of_kitten.emplace_front(i);
   }
-  for (auto& target : std_list_of_kitten) {
-    auto iter = std::find_if(
-        pvc_list_of_kitten.begin(),
-        pvc_list_of_kitten.end(),
-        [&target](const auto& kitten) { return kitten == target; });
-    EXPECT_NE(iter, pvc_list_of_kitten.end());
-    EXPECT_EQ(*iter, target);
-  }
+  // look for an object in the list
+  auto iter = std::find(
+      pvc_list_of_kitten.begin(),
+      pvc_list_of_kitten.end(),
+      Kitten(2));
+  EXPECT_NE(iter, pvc_list_of_kitten.end());
+  EXPECT_EQ(*iter, Kitten(2));
+  // look for an object not in the list
+  iter = std::find(
+      pvc_list_of_kitten.begin(),
+      pvc_list_of_kitten.end(),
+      Kitten(-2));
+  EXPECT_EQ(iter, pvc_list_of_kitten.end());
 }
 
 TEST_F(ForwardListTest, DoAfter) {
