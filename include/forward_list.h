@@ -27,6 +27,7 @@ class forward_list {
  public:  // iterator and related methods
   struct iterator : public std::iterator<
       std::forward_iterator_tag, value_type, std::ptrdiff_t> {
+    friend forward_list;
    public:
     explicit iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
 
@@ -84,7 +85,14 @@ class forward_list {
   }
 
   template <class... Args> 
-  iterator emplace_after(iterator pos, Args&&... args);
+  iterator emplace_after(iterator pos, Args&&... args) {
+    auto& uptr_next = pos.ptr_node->uptr_next;
+    auto uptr_new = std::make_unique<Node>(std::forward<Args>(args)...);
+    uptr_new->uptr_next.reset(uptr_next.release());
+    uptr_next.reset(uptr_new.release());
+    return iterator(uptr_next.get());
+  }
+
  private:
   std::unique_ptr<Node> uptr_head_{ nullptr };
 };
