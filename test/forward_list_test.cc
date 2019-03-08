@@ -81,8 +81,28 @@ TEST_F(ForwardListTest, Iterator) {
   EXPECT_EQ(iter, pvc_list_of_kitten.end());
 }
 
-TEST_F(ForwardListTest, DoAfter) {
-  FAIL();
+TEST_F(ForwardListTest, EmplaceAfter) {
+  for (const auto& i : std_list_of_id) {
+    std_list_of_kitten.emplace_front(i);
+    pvc_list_of_kitten.emplace_front(i);
+  }
+  const auto& target = Kitten(2);
+  auto std_iter = std::find(
+      std_list_of_kitten.begin(),
+      std_list_of_kitten.end(),
+      target);
+  std_iter = std_list_of_kitten.emplace_after(std_iter, 0);
+  auto pvc_iter = std::find(
+      pvc_list_of_kitten.begin(),
+      pvc_list_of_kitten.end(),
+      target);
+  pvc_iter = pvc_list_of_kitten.emplace_after(pvc_iter, 0);
+  EXPECT_EQ(*pvc_iter, *std_iter);
+  while (!pvc_list_of_kitten.empty()) {
+    EXPECT_EQ(pvc_list_of_kitten.front(), std_list_of_kitten.front());
+    pvc_list_of_kitten.pop_front();
+    std_list_of_kitten.pop_front();
+  }
 }
 
 int main(int argc, char* argv[]) {

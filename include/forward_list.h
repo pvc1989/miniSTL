@@ -83,6 +83,8 @@ class forward_list {
     uptr_head_.swap(uptr_next);
   }
 
+  template <class... Args> 
+  iterator emplace_after(iterator pos, Args&&... args);
  private:
   std::unique_ptr<Node> uptr_head_{ nullptr };
 };
