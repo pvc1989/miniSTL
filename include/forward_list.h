@@ -3,6 +3,7 @@
 #ifndef PVC_FORWARD_LIST_H_
 #define PVC_FORWARD_LIST_H_
 
+#include <iterator>
 #include <memory>
 #include <utility>
 
@@ -23,9 +24,46 @@ class forward_list {
     explicit Node(Args... args) : value(std::forward<Args>(args)...) { }
   };
 
+ public:  // iterator and related methods
+  struct iterator : public std::iterator<
+      std::forward_iterator_tag, value_type, std::ptrdiff_t> {
+   public:
+    explicit iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
+
+    typename iterator::reference operator*() const noexcept {
+      return ptr_node->value;
+    }
+    typename iterator::pointer operator->() const noexcept {
+      return &this->operator*();
+    }
+
+    bool operator==(iterator const& rhs) const noexcept {
+      return ptr_node == rhs.ptr_node;
+    }
+    bool operator!=(iterator const& rhs) const noexcept {
+      return !(*this == rhs);
+    }
+
+    iterator& operator++() {
+      ptr_node = ptr_node->uptr_next.get();
+      return *this;
+    }
+    iterator operator++(int) {
+      auto iter = iterator(ptr_node);
+      ptr_node = ptr_node->uptr_next.get();
+      return iter;
+    }
+
    private:
     Node* ptr_node{ nullptr };
   };
+
+  iterator begin() noexcept {
+    return iterator(uptr_head_.get());
+  };
+  iterator end() noexcept {
+    return iterator(nullptr);
+  }
 
  public:  // non-modifying methods
   bool empty() const noexcept { return !uptr_head_.get(); }
