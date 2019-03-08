@@ -30,12 +30,10 @@ class ForwardListTest : public ::testing::Test {
 };
 
 TEST_F(ForwardListTest, Empty) {
-  FAIL();
   EXPECT_EQ(pvc_list_of_kitten.empty(), std_list_of_kitten.empty());
 }
 
 TEST_F(ForwardListTest, EmplaceFront) {
-  FAIL();
   for (const auto& i : std_list_of_id) {
     std_list_of_kitten.emplace_front(i);
     pvc_list_of_kitten.emplace_front(i);
@@ -48,7 +46,15 @@ TEST_F(ForwardListTest, ListInitialize) {
 }
 
 TEST_F(ForwardListTest, PopFront) {
-  FAIL();
+  for (const auto& i : std_list_of_id) {
+    std_list_of_kitten.emplace_front(i);
+    pvc_list_of_kitten.emplace_front(i);
+  }
+  while (!std_list_of_kitten.empty()) {
+    std_list_of_kitten.pop_front();
+    pvc_list_of_kitten.pop_front();
+    EXPECT_EQ(pvc_list_of_kitten.empty(), std_list_of_kitten.empty());
+  }
 }
 
 TEST_F(ForwardListTest, BeginEnd) {
