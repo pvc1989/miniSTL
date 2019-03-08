@@ -22,6 +22,7 @@ class ForwardListTest : public ::testing::Test {
     Kitten& operator=(const Kitten&) = default;
     Kitten(Kitten&&) noexcept = default;
     Kitten& operator=(Kitten&&) noexcept = default;
+    bool operator==(const Kitten& that) const { return id == that.id; }
   };
   // common data
   std::forward_list<int> std_list_of_id{ 4, 3, 2, 1 };
@@ -39,6 +40,14 @@ TEST_F(ForwardListTest, EmplaceFront) {
     pvc_list_of_kitten.emplace_front(i);
   }
   EXPECT_EQ(pvc_list_of_kitten.empty(), std_list_of_kitten.empty());
+}
+
+TEST_F(ForwardListTest, Front) {
+  for (const auto& i : std_list_of_id) {
+    std_list_of_kitten.emplace_front(i);
+    pvc_list_of_kitten.emplace_front(i);
+    EXPECT_EQ(pvc_list_of_kitten.front(), std_list_of_kitten.front());
+  }
 }
 
 TEST_F(ForwardListTest, ListInitialize) {
@@ -66,9 +75,9 @@ TEST_F(ForwardListTest, BeginEnd) {
     auto iter = std::find_if(
         pvc_list_of_kitten.begin(),
         pvc_list_of_kitten.end(),
-        [&target](const auto& kitten) { return kitten.id == target.id; });
+        [&target](const auto& kitten) { return kitten == target; });
     EXPECT_NE(iter, pvc_list_of_kitten.end());
-    EXPECT_EQ(iter->id, target.id);
+    EXPECT_EQ(*iter, target);
   }
 }
 

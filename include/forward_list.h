@@ -75,7 +75,9 @@ class forward_list {
     uptr_new->uptr_next.reset(uptr_head_.release());
     uptr_new.swap(uptr_head_);
   }
-  
+
+  reference front() { return uptr_head_->value; }
+
   void pop_front() {
     std::unique_ptr<Node> uptr_next(uptr_head_->uptr_next.release());
     uptr_head_.swap(uptr_next);
