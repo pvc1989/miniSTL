@@ -15,6 +15,9 @@ class forward_list {
   using size_type = std::size_t;
   using reference = value_type&;
 
+ public:
+  ~forward_list() { clear(); }
+
  private:
   struct Node {
     value_type value;
@@ -82,6 +85,12 @@ class forward_list {
   void pop_front() {
     std::unique_ptr<Node> uptr_next(uptr_head_->uptr_next.release());
     uptr_head_.swap(uptr_next);
+  }
+
+  void clear() noexcept {
+    while(!empty()) {
+      pop_front();
+    }
   }
 
   template <class... Args> 
