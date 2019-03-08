@@ -3,6 +3,7 @@
 #include "forward_list.h"
 
 #include <algorithm>
+#include <chrono>
 #include <iostream>
 #include <forward_list>
 
@@ -16,8 +17,8 @@ class ForwardListTest : public ::testing::Test {
   // helper class
   struct Kitten {
     const int id;
-    explicit Kitten(int id) : id(id) { cout << "Kitten(" << id << ')' << endl; }
-    ~Kitten() { cout << id << " ~Kitten()" << endl; }
+    explicit Kitten(int id) : id(id) { }
+    ~Kitten() = default;
     Kitten(const Kitten&) = default;
     Kitten& operator=(const Kitten&) = default;
     Kitten(Kitten&&) noexcept = default;
@@ -103,6 +104,23 @@ TEST_F(ForwardListTest, EmplaceAfter) {
     pvc_list_of_kitten.pop_front();
     std_list_of_kitten.pop_front();
   }
+}
+
+TEST_F(ForwardListTest, Performance) {
+  using clock = std::chrono::high_resolution_clock;
+  int n = 1000000;
+  auto ticks = [n](auto& list) {
+    auto start = clock::now();
+    for (int i = 0; i != n; ++i) {
+      list.emplace_front(i);
+    }
+    std::chrono::duration<double> duration = clock::now() - start;
+    return duration.count();
+  };
+  auto std_ticks = ticks(std_list_of_kitten);
+  auto pvc_ticks = ticks(pvc_list_of_kitten);
+  auto ratio = pvc_ticks / std_ticks;
+  EXPECT_LT(ratio, 1.2);
 }
 
 int main(int argc, char* argv[]) {
