@@ -114,6 +114,7 @@ TEST_F(ForwardListTest, Performance) {
     for (int i = 0; i != n; ++i) {
       list.emplace_front(i);
     }
+    list.clear();
     std::chrono::duration<double> duration = clock::now() - start;
     return duration.count();
   };
