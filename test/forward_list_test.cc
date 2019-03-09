@@ -118,10 +118,9 @@ TEST_F(ForwardListTest, Performance) {
     std::chrono::duration<double> duration = clock::now() - start;
     return duration.count();
   };
-  auto std_ticks = ticks(std_list_of_kitten);
-  auto pvc_ticks = ticks(pvc_list_of_kitten);
-  auto ratio = pvc_ticks / std_ticks;
-  EXPECT_LT(ratio, 1.2);
+  auto t_std = ticks(std_list_of_kitten);
+  auto t_pvc = ticks(pvc_list_of_kitten);
+  EXPECT_LT(t_pvc/t_std, 1.2);
 }
 
 int main(int argc, char* argv[]) {
