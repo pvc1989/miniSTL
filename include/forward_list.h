@@ -105,5 +105,105 @@ class forward_list {
  private:
   std::unique_ptr<Node> uptr_head_{ nullptr };
 };
+
+// using raw pointers
+namespace raw {
+template <class T>
+class forward_list {
+ public:
+  using value_type = T;
+  using size_type = std::size_t;
+  using reference = value_type&;
+
+ public:
+  ~forward_list() { clear(); }
+
+ private:
+  struct Node {
+    Node* ptr_next{ nullptr };
+    value_type value;
+
+    template <class... Args>
+    explicit Node(Node* ptr_node, Args... args)
+      : ptr_next(ptr_node), value(std::forward<Args>(args)...) { }
+  };
+
+ private:
+  Node* ptr_head_{ nullptr };
+
+ public:  // iterator and related methods
+  struct iterator : public std::iterator<
+      std::forward_iterator_tag, value_type, std::ptrdiff_t> {
+    friend forward_list;
+   private:
+    Node* ptr_node{ nullptr };
+   public:
+    explicit iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
+
+    typename iterator::reference operator*() const noexcept {
+      return ptr_node->value;
+    }
+    typename iterator::pointer operator->() const noexcept {
+      return &this->operator*();
+    }
+
+    bool operator==(iterator const& rhs) const noexcept {
+      return ptr_node == rhs.ptr_node;
+    }
+    bool operator!=(iterator const& rhs) const noexcept {
+      return !(*this == rhs);
+    }
+
+    iterator& operator++() {
+      ptr_node = ptr_node->ptr_next;
+      return *this;
+    }
+    iterator operator++(int) {
+      auto iter_old = iterator(ptr_node);
+      ptr_node = ptr_node->ptr_next;
+      return iter_old;
+    }
+  };
+
+  iterator begin() noexcept {
+    return iterator(ptr_head_);
+  };
+  iterator end() noexcept {
+    return iterator(nullptr);
+  }
+
+ public:  // non-modifying methods
+  bool empty() const noexcept { return !ptr_head_; }
+
+ public:  // modifying methods
+  template <class... Args>
+  void emplace_front(Args&&... args) {
+    // TODO: if out-of memory?
+    ptr_head_ = new Node(ptr_head_, std::forward<Args>(args)...);
+  }
+
+  reference front() { return ptr_head_->value; }
+
+  void pop_front() {
+    auto ptr_old = ptr_head_;
+    ptr_head_ = ptr_head_->ptr_next;
+    delete ptr_old;
+  }
+
+  void clear() noexcept {
+    while(!empty()) {
+      pop_front();
+    }
+  }
+
+  template <class... Args> 
+  iterator emplace_after(iterator pos, Args&&... args) {
+    auto& pos_next = pos.ptr_node->ptr_next;
+    auto ptr_new = new Node(pos_next, std::forward<Args>(args)...);
+    pos_next = ptr_new;
+    return ++pos;
+  }
+};
+}  // namespace raw
 }  // namespace pvc
 #endif  // PVC_FORWARD_LIST_H_
