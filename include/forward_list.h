@@ -83,8 +83,8 @@ class forward_list {
   reference front() { return uptr_head_->value; }
 
   void pop_front() {
-    std::unique_ptr<Node> uptr_next(uptr_head_->uptr_next.release());
-    uptr_head_.swap(uptr_next);
+    auto ptr_next = uptr_head_->uptr_next.release();
+    uptr_head_.reset(ptr_next);
   }
 
   void clear() noexcept {
