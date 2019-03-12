@@ -8,6 +8,7 @@
 #include <utility>
 
 namespace pvc {
+
 template <class T>
 class forward_list {
  public:
@@ -16,7 +17,7 @@ class forward_list {
   using reference = value_type&;
 
  public:
-  ~forward_list() { clear(); }
+  ~forward_list() noexcept { clear(); }
 
  private:
   struct Node {
@@ -48,11 +49,11 @@ class forward_list {
       return !(*this == rhs);
     }
 
-    iterator& operator++() {
+    iterator& operator++() noexcept {
       ptr_node = ptr_node->uptr_next.get();
       return *this;
     }
-    iterator operator++(int) {
+    iterator operator++(int) noexcept {
       auto iter = iterator(ptr_node);
       ptr_node = ptr_node->uptr_next.get();
       return iter;
@@ -82,7 +83,7 @@ class forward_list {
 
   reference front() { return uptr_head_->value; }
 
-  void pop_front() {
+  void pop_front() noexcept {
     auto ptr_next = uptr_head_->uptr_next.release();
     uptr_head_.reset(ptr_next);
   }
@@ -108,6 +109,7 @@ class forward_list {
 
 // using raw pointers
 namespace raw {
+
 template <class T>
 class forward_list {
  public:
@@ -116,7 +118,7 @@ class forward_list {
   using reference = value_type&;
 
  public:
-  ~forward_list() { clear(); }
+  ~forward_list() noexcept { clear(); }
 
  private:
   struct Node {
@@ -154,11 +156,11 @@ class forward_list {
       return !(*this == rhs);
     }
 
-    iterator& operator++() {
+    iterator& operator++() noexcept {
       ptr_node = ptr_node->ptr_next;
       return *this;
     }
-    iterator operator++(int) {
+    iterator operator++(int) noexcept {
       auto iter_old = iterator(ptr_node);
       ptr_node = ptr_node->ptr_next;
       return iter_old;
@@ -178,13 +180,12 @@ class forward_list {
  public:  // modifying methods
   template <class... Args>
   void emplace_front(Args&&... args) {
-    // TODO: if out-of memory?
     ptr_head_ = new Node(ptr_head_, std::forward<Args>(args)...);
   }
 
   reference front() { return ptr_head_->value; }
 
-  void pop_front() {
+  void pop_front() noexcept {
     auto ptr_old = ptr_head_;
     ptr_head_ = ptr_head_->ptr_next;
     delete ptr_old;
@@ -204,6 +205,7 @@ class forward_list {
     return ++pos;
   }
 };
+
 }  // namespace raw
 }  // namespace pvc
 #endif  // PVC_FORWARD_LIST_H_
