@@ -33,7 +33,7 @@ class forward_list {
       std::forward_iterator_tag, value_type, std::ptrdiff_t> {
     friend forward_list;
    public:
-    explicit iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
+    iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
 
     typename iterator::reference operator*() const noexcept {
       return ptr_node->value;
@@ -140,7 +140,7 @@ class forward_list {
    private:
     Node* ptr_node{ nullptr };
    public:
-    explicit iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
+    iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
 
     typename iterator::reference operator*() const noexcept {
       return ptr_node->value;
