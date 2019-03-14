@@ -119,20 +119,6 @@ class forward_list {
  public:  // non-modifying methods
   bool empty() const noexcept { return !uptr_head_.get(); }
 
-  bool operator==(const forward_list& that) const noexcept {
-    auto iter = begin();
-    const auto iend = end();
-    for (const auto& x : that) {
-      if (iter == iend || *iter != x) { return false; }
-      else { ++iter; }
-    }
-    if (iter == iend) { return true; }
-    else { return false; }
-  }
-  bool operator!=(const forward_list& that) const noexcept {
-    return !(*this == that);
-  }
-
  public:  // modifying methods
   template <class... Args>
   void emplace_front(Args&&... args) {
@@ -163,6 +149,24 @@ class forward_list {
     return iterator(uptr_next.get());
   }
 };
+
+template <class T>
+bool operator==(const forward_list<T>& lhs,
+                const forward_list<T>& rhs) noexcept {
+  auto iter = lhs.begin();
+  const auto iend = lhs.end();
+  for (const auto& x : rhs) {
+    if (iter == iend || *iter != x) { return false; }
+    else { ++iter; }
+  }
+  if (iter == iend) { return true; }
+  else { return false; }  
+}
+template <class T>
+bool operator!=(const forward_list<T>& lhs,
+                const forward_list<T>& rhs) noexcept {
+  return !(lhs == rhs);                 
+}
 
 // using raw pointers
 namespace raw {
@@ -283,20 +287,6 @@ class forward_list {
  public:  // non-modifying methods
   bool empty() const noexcept { return !ptr_head_; }
 
-  bool operator==(const forward_list& that) const noexcept {
-    auto iter = begin();
-    const auto iend = end();
-    for (const auto& x : that) {
-      if (iter == iend || *iter != x) { return false; }
-      else { ++iter; }
-    }
-    if (iter == iend) { return true; }
-    else { return false; }
-  }
-  bool operator!=(const forward_list& that) const noexcept {
-    return !(*this == that);
-  }
-
  public:  // modifying methods
   template <class... Args>
   void emplace_front(Args&&... args) {
@@ -325,6 +315,24 @@ class forward_list {
     return ++pos;
   }
 };
+
+template <class T>
+bool operator==(const forward_list<T>& lhs,
+                const forward_list<T>& rhs) noexcept {
+  auto iter = lhs.begin();
+  const auto iend = lhs.end();
+  for (const auto& x : rhs) {
+    if (iter == iend || *iter != x) { return false; }
+    else { ++iter; }
+  }
+  if (iter == iend) { return true; }
+  else { return false; }  
+}
+template <class T>
+bool operator!=(const forward_list<T>& lhs,
+                const forward_list<T>& rhs) noexcept {
+  return !(lhs == rhs);                 
+}
 
 }  // namespace raw
 }  // namespace pvc
