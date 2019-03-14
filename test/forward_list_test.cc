@@ -16,14 +16,15 @@ class ForwardListTest : public ::testing::Test {
  protected:
   // helper class
   struct Kitten {
-    const int id;
+    int id;
     explicit Kitten(int id) : id(id) { }
-    ~Kitten() = default;
+    ~Kitten() noexcept = default;
     Kitten(const Kitten&) = default;
     Kitten& operator=(const Kitten&) = default;
     Kitten(Kitten&&) noexcept = default;
     Kitten& operator=(Kitten&&) noexcept = default;
     bool operator==(const Kitten& that) const { return id == that.id; }
+    bool operator!=(const Kitten& that) const { return id != that.id; }
   };
   // common data
   std::forward_list<int> std_list_of_id{ 4, 3, 2, 1 };
