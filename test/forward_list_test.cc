@@ -119,6 +119,37 @@ TEST_F(ForwardListTest, Equal) {
   EXPECT_FALSE(new_list_of_kitten != pvc_list_of_kitten);
 }
 
+TEST_F(ForwardListTest, Copy) {
+  for (const auto& i : std_list_of_id) {
+    pvc_list_of_kitten.emplace_front(i);
+  }
+  // test copy constructor:
+  auto new_list_of_kitten = pvc_list_of_kitten;
+  EXPECT_EQ(new_list_of_kitten, pvc_list_of_kitten);
+  // test copy assignment operator:
+  new_list_of_kitten = pvc_list_of_kitten;
+  EXPECT_EQ(new_list_of_kitten, pvc_list_of_kitten);
+  // test self assignment:
+  new_list_of_kitten = new_list_of_kitten;
+  EXPECT_EQ(new_list_of_kitten, pvc_list_of_kitten);
+}
+
+TEST_F(ForwardListTest, Move) {
+  for (const auto& i : std_list_of_id) {
+    pvc_list_of_kitten.emplace_front(i);
+  }
+  // test move constructor:
+  auto copied_list_of_kitten = pvc_list_of_kitten;
+  auto moved_list_of_kitten = std::move(pvc_list_of_kitten);
+  EXPECT_EQ(moved_list_of_kitten, copied_list_of_kitten);
+  // test move assignment operator:
+  pvc_list_of_kitten = std::move(copied_list_of_kitten);
+  EXPECT_EQ(moved_list_of_kitten, pvc_list_of_kitten);
+  // test self assignment:
+  moved_list_of_kitten = std::move(moved_list_of_kitten);
+  EXPECT_EQ(moved_list_of_kitten, pvc_list_of_kitten);
+}
+
 TEST_F(ForwardListTest, Performance) {
   using clock = std::chrono::high_resolution_clock;
   int n = 1000000;
