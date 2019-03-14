@@ -20,7 +20,38 @@ class forward_list {
   using const_pointer = const value_type *;
 
  public:
+  forward_list() = default;
   ~forward_list() noexcept { clear(); }
+  // copy operations:
+  forward_list(const forward_list& that) { *this = that; }
+  forward_list& operator=(const forward_list& that) {
+    if (this != &that) {
+      clear();
+      auto iter_on_that = that.begin();
+      auto iend_of_that = that.end();
+      // add the 1st item, if any:
+      if (iter_on_that != iend_of_that) {
+        emplace_front(*iter_on_that);
+        ++iter_on_that;
+      }
+      // add the other items, if any:
+      auto iter_on_this = begin();
+      while (iter_on_that != iend_of_that) {
+        iter_on_this = emplace_after(iter_on_this, *iter_on_that);
+        ++iter_on_that;
+      }
+    }
+    return *this;
+  }
+  // move operations:
+  forward_list(forward_list&& that) { *this = std::move(that); }
+  forward_list& operator=(forward_list&& that) {
+    if (this != &that) {
+      clear();
+      uptr_head_.swap(that.uptr_head_);
+    }
+    return *this;
+  }
 
  private:
   struct Node {
@@ -30,6 +61,9 @@ class forward_list {
     template <class... Args>
     explicit Node(Args... args) : value(std::forward<Args>(args)...) { }
   };
+
+ private:
+  std::unique_ptr<Node> uptr_head_{ nullptr };
 
  public:  // iterator and related methods
   struct iterator : public std::iterator<
@@ -128,9 +162,6 @@ class forward_list {
     uptr_next.reset(uptr_new.release());
     return iterator(uptr_next.get());
   }
-
- private:
-  std::unique_ptr<Node> uptr_head_{ nullptr };
 };
 
 // using raw pointers
@@ -147,7 +178,39 @@ class forward_list {
   using const_pointer = const value_type *;
 
  public:
+  forward_list() = default;
   ~forward_list() noexcept { clear(); }
+  // copy operations:
+  forward_list(const forward_list& that) { *this = that; }
+  forward_list& operator=(const forward_list& that) {
+    if (this != &that) {
+      clear();
+      auto iter_on_that = that.begin();
+      auto iend_of_that = that.end();
+      // add the 1st item, if any:
+      if (iter_on_that != iend_of_that) {
+        emplace_front(*iter_on_that);
+        ++iter_on_that;
+      }
+      // add the other items, if any:
+      auto iter_on_this = begin();
+      while (iter_on_that != iend_of_that) {
+        iter_on_this = emplace_after(iter_on_this, *iter_on_that);
+        ++iter_on_that;
+      }
+    }
+    return *this;
+  }
+  // move operations:
+  forward_list(forward_list&& that) { *this = std::move(that); }
+  forward_list& operator=(forward_list&& that) {
+    if (this != &that) {
+      clear();
+      ptr_head_ = that.ptr_head_;
+      that.ptr_head_ = nullptr;
+    }
+    return *this;
+  }
 
  private:
   struct Node {
