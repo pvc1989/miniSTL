@@ -107,6 +107,18 @@ TEST_F(ForwardListTest, EmplaceAfter) {
   }
 }
 
+TEST_F(ForwardListTest, Equal) {
+  auto new_list_of_kitten = decltype(pvc_list_of_kitten)();
+  for (const auto& i : std_list_of_id) {
+    pvc_list_of_kitten.emplace_front(i);
+    new_list_of_kitten.emplace_front(i);
+  }
+  EXPECT_TRUE(pvc_list_of_kitten == pvc_list_of_kitten);
+  EXPECT_TRUE(new_list_of_kitten == pvc_list_of_kitten);
+  EXPECT_FALSE(pvc_list_of_kitten != pvc_list_of_kitten);
+  EXPECT_FALSE(new_list_of_kitten != pvc_list_of_kitten);
+}
+
 TEST_F(ForwardListTest, Performance) {
   using clock = std::chrono::high_resolution_clock;
   int n = 1000000;
