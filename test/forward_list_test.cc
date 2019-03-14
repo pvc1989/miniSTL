@@ -4,13 +4,9 @@
 
 #include <algorithm>
 #include <chrono>
-#include <iostream>
 #include <forward_list>
 
 #include "gtest/gtest.h"
-
-using std::cout;
-using std::endl;
 
 class ForwardListTest : public ::testing::Test {
  protected:
