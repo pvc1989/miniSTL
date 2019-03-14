@@ -63,12 +63,8 @@ class forward_list {
     Node* ptr_node{ nullptr };
   };
 
-  iterator begin() noexcept {
-    return iterator(uptr_head_.get());
-  };
-  iterator end() noexcept {
-    return iterator(nullptr);
-  }
+  iterator begin() noexcept { return uptr_head_.get(); };
+  iterator end() noexcept { return nullptr; }
 
  public:  // non-modifying methods
   bool empty() const noexcept { return !uptr_head_.get(); }
@@ -167,12 +163,8 @@ class forward_list {
     }
   };
 
-  iterator begin() noexcept {
-    return iterator(ptr_head_);
-  };
-  iterator end() noexcept {
-    return iterator(nullptr);
-  }
+  iterator begin() noexcept { return ptr_head_; }
+  iterator end() noexcept { return nullptr; }
 
  public:  // non-modifying methods
   bool empty() const noexcept { return !ptr_head_; }
