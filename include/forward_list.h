@@ -85,6 +85,20 @@ class forward_list {
  public:  // non-modifying methods
   bool empty() const noexcept { return !uptr_head_.get(); }
 
+  template <class List>
+  bool operator==(const List& that) const noexcept {
+    auto iter = begin();
+    const auto iend = end();
+    for (const auto& x : that) {
+      if (iter == iend || *iter != x) { return false; }
+      else { ++iter; }
+    }
+    if (iter == iend) { return true; }
+    else { return false; }
+  }
+  template <class List>
+  bool operator!=(const List& that) const noexcept { return !(*this == that); }
+
  public:  // modifying methods
   template <class... Args>
   void emplace_front(Args&&... args) {
@@ -205,6 +219,20 @@ class forward_list {
 
  public:  // non-modifying methods
   bool empty() const noexcept { return !ptr_head_; }
+
+  template <class List>
+  bool operator==(const List& that) const noexcept {
+    auto iter = begin();
+    const auto iend = end();
+    for (const auto& x : that) {
+      if (iter == iend || *iter != x) { return false; }
+      else { ++iter; }
+    }
+    if (iter == iend) { return true; }
+    else { return false; }
+  }
+  template <class List>
+  bool operator!=(const List& that) const noexcept { return !(*this == that); }
 
  public:  // modifying methods
   template <class... Args>
