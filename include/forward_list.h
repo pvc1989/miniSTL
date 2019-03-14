@@ -14,7 +14,10 @@ class forward_list {
  public:
   using value_type = T;
   using size_type = std::size_t;
-  using reference = value_type&;
+  using reference = value_type &;
+  using const_reference = const value_type &;
+  using pointer = value_type *;
+  using const_pointer = const value_type *;
 
  public:
   ~forward_list() noexcept { clear(); }
@@ -32,15 +35,13 @@ class forward_list {
   struct iterator : public std::iterator<
       std::forward_iterator_tag, value_type, std::ptrdiff_t> {
     friend forward_list;
+   protected:
+    Node* ptr_node{ nullptr };
    public:
     iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
 
-    typename iterator::reference operator*() const noexcept {
-      return ptr_node->value;
-    }
-    typename iterator::pointer operator->() const noexcept {
-      return &this->operator*();
-    }
+    reference operator*() const noexcept { return ptr_node->value; }
+    pointer operator->() const noexcept { return &this->operator*(); }
 
     bool operator==(iterator const& rhs) const noexcept {
       return ptr_node == rhs.ptr_node;
@@ -58,13 +59,28 @@ class forward_list {
       ptr_node = ptr_node->uptr_next.get();
       return iter;
     }
-
-   private:
-    Node* ptr_node{ nullptr };
   };
 
   iterator begin() noexcept { return uptr_head_.get(); };
   iterator end() noexcept { return nullptr; }
+
+  struct const_iterator : public iterator {
+    friend forward_list;
+   public:
+    using reference = typename forward_list::const_reference;
+    using pointer = typename forward_list::const_pointer;
+
+    const_iterator(Node* ptr_node) noexcept : iterator(ptr_node) { }
+
+    reference operator*() const noexcept { return this->iterator::operator*(); }
+    pointer operator->() const noexcept { return this->iterator::operator->(); }
+  };
+
+  const_iterator cbegin() const noexcept { return uptr_head_.get(); };
+  const_iterator cend() const noexcept { return nullptr; }
+
+  const_iterator begin() const noexcept { return cbegin(); };
+  const_iterator end() const noexcept { return cend(); }
 
  public:  // non-modifying methods
   bool empty() const noexcept { return !uptr_head_.get(); }
@@ -111,7 +127,10 @@ class forward_list {
  public:
   using value_type = T;
   using size_type = std::size_t;
-  using reference = value_type&;
+  using reference = value_type &;
+  using const_reference = const value_type &;
+  using pointer = value_type *;
+  using const_pointer = const value_type *;
 
  public:
   ~forward_list() noexcept { clear(); }
@@ -138,10 +157,10 @@ class forward_list {
    public:
     iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
 
-    typename iterator::reference operator*() const noexcept {
+    reference operator*() const noexcept {
       return ptr_node->value;
     }
-    typename iterator::pointer operator->() const noexcept {
+    pointer operator->() const noexcept {
       return &this->operator*();
     }
 
@@ -165,6 +184,24 @@ class forward_list {
 
   iterator begin() noexcept { return ptr_head_; }
   iterator end() noexcept { return nullptr; }
+
+  struct const_iterator : public iterator {
+    friend forward_list;
+   public:
+    using reference = typename forward_list::const_reference;
+    using pointer = typename forward_list::const_pointer;
+
+    const_iterator(Node* ptr_node) noexcept : iterator(ptr_node) { }
+
+    reference operator*() const noexcept { return this->iterator::operator*(); }
+    pointer operator->() const noexcept { return this->iterator::operator->(); }
+  };
+
+  const_iterator cbegin() const noexcept { return ptr_head_; };
+  const_iterator cend() const noexcept { return nullptr; }
+
+  const_iterator begin() const noexcept { return cbegin(); };
+  const_iterator end() const noexcept { return cend(); }
 
  public:  // non-modifying methods
   bool empty() const noexcept { return !ptr_head_; }
