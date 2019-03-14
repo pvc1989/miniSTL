@@ -119,8 +119,7 @@ class forward_list {
  public:  // non-modifying methods
   bool empty() const noexcept { return !uptr_head_.get(); }
 
-  template <class List>
-  bool operator==(const List& that) const noexcept {
+  bool operator==(const forward_list& that) const noexcept {
     auto iter = begin();
     const auto iend = end();
     for (const auto& x : that) {
@@ -130,8 +129,9 @@ class forward_list {
     if (iter == iend) { return true; }
     else { return false; }
   }
-  template <class List>
-  bool operator!=(const List& that) const noexcept { return !(*this == that); }
+  bool operator!=(const forward_list& that) const noexcept {
+    return !(*this == that);
+  }
 
  public:  // modifying methods
   template <class... Args>
@@ -283,8 +283,7 @@ class forward_list {
  public:  // non-modifying methods
   bool empty() const noexcept { return !ptr_head_; }
 
-  template <class List>
-  bool operator==(const List& that) const noexcept {
+  bool operator==(const forward_list& that) const noexcept {
     auto iter = begin();
     const auto iend = end();
     for (const auto& x : that) {
@@ -294,8 +293,9 @@ class forward_list {
     if (iter == iend) { return true; }
     else { return false; }
   }
-  template <class List>
-  bool operator!=(const List& that) const noexcept { return !(*this == that); }
+  bool operator!=(const forward_list& that) const noexcept {
+    return !(*this == that);
+  }
 
  public:  // modifying methods
   template <class... Args>
