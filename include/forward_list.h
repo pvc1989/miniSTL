@@ -3,9 +3,11 @@
 #ifndef PVC_FORWARD_LIST_H_
 #define PVC_FORWARD_LIST_H_
 
-#include <iterator>
+#include <cstddef>
 #include <memory>
-#include <utility>
+
+#include "iterator.h"
+#include "utility.h"
 
 namespace pvc {
 
@@ -66,8 +68,8 @@ class forward_list {
   std::unique_ptr<Node> uptr_head_{ nullptr };
 
  public:  // iterator and related methods
-  struct iterator : public std::iterator<
-      std::forward_iterator_tag, value_type, std::ptrdiff_t> {
+  struct iterator : public pvc::iterator<
+      std::forward_iterator_tag, forward_list::value_type> {
     friend forward_list;
    protected:
     Node* ptr_node{ nullptr };
@@ -230,8 +232,8 @@ class forward_list {
   Node* ptr_head_{ nullptr };
 
  public:  // iterator and related methods
-  struct iterator : public std::iterator<
-      std::forward_iterator_tag, value_type, std::ptrdiff_t> {
+  struct iterator : public pvc::iterator<
+      std::forward_iterator_tag, forward_list::value_type> {
     friend forward_list;
    private:
     Node* ptr_node{ nullptr };
@@ -336,4 +338,5 @@ bool operator!=(const forward_list<T>& lhs,
 
 }  // namespace raw
 }  // namespace pvc
+
 #endif  // PVC_FORWARD_LIST_H_

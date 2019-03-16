@@ -136,13 +136,13 @@ TEST_F(ForwardListTest, Move) {
   }
   // test move constructor:
   auto copied_list_of_kitten = pvc_list_of_kitten;
-  auto moved_list_of_kitten = std::move(pvc_list_of_kitten);
+  auto moved_list_of_kitten = pvc::move(pvc_list_of_kitten);
   EXPECT_EQ(moved_list_of_kitten, copied_list_of_kitten);
   // test move assignment operator:
-  pvc_list_of_kitten = std::move(copied_list_of_kitten);
+  pvc_list_of_kitten = pvc::move(copied_list_of_kitten);
   EXPECT_EQ(moved_list_of_kitten, pvc_list_of_kitten);
   // test self assignment:
-  moved_list_of_kitten = std::move(moved_list_of_kitten);
+  moved_list_of_kitten = pvc::move(moved_list_of_kitten);
   EXPECT_EQ(moved_list_of_kitten, pvc_list_of_kitten);
 }
 
