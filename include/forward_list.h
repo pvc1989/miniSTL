@@ -119,7 +119,7 @@ class forward_list {
   const_iterator end() const noexcept { return cend(); }
 
  public:  // non-modifying methods
-  bool empty() const noexcept { return !uptr_head_.get(); }
+  bool empty() const noexcept { return not uptr_head_; }
 
  public:  // modifying methods
   template <class... Args>
