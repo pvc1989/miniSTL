@@ -156,6 +156,29 @@ TEST_F(VectorTest, operator) {
     j++;
   }
 }
+TEST_F(VectorTest, BeginAndEnd) {
+  for (const auto& i : std_vector_of_id) {
+    pvc_vector_of_kitten.emplace_back(i);
+    std_vector_of_kitten.emplace_back(i);
+  }
+  auto iter_pvc = pvc_vector_of_kitten.begin();
+  auto iter_std = std_vector_of_kitten.begin();
+  while (iter_pvc != pvc_vector_of_kitten.end()) {
+    EXPECT_EQ(*iter_pvc, *iter_std);
+    ++iter_pvc;
+    ++iter_std;
+  }
+}
+TEST_F(VectorTest, RangeFor) {
+  for (const auto& i : std_vector_of_id) {
+    pvc_vector_of_kitten.emplace_back(i);
+    std_vector_of_kitten.emplace_back(i);
+  }
+  auto iter = std_vector_of_kitten.begin();
+  for (auto x : pvc_vector_of_kitten) {
+    EXPECT_EQ(x, *iter++);
+  }
+}
 TEST_F(VectorTest, Iterator) {
   for (const auto& i : std_vector_of_id) {
     pvc_vector_of_kitten.emplace_back(i);
