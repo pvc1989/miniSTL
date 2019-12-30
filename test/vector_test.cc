@@ -3,7 +3,6 @@
 #include "vector.h"
 
 #include <algorithm>
-#include <forward_list>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -24,7 +23,7 @@ class VectorTest : public ::testing::Test {
     bool operator!=(const Kitten& that) const { return id != that.id; }
   };
   // common data
-  std::forward_list<int> std_vector_of_id{ 4, 3, 2, 1 };
+  std::vector<int> std_vector_of_id{ 1, 2, 3, 4 };
   std::vector<Kitten> std_vector_of_kitten;
   pvc::vector<Kitten> pvc_vector_of_kitten;
 };
