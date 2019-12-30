@@ -70,38 +70,43 @@ TEST_F(VectorTest, EmplaceBack) {
   for (auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
     pvc_vector_of_kitten.emplace_back(i);
+    ExpectEqual();
   }
-  ExpectEqual();
 }
 TEST_F(VectorTest, PushBack) {
-  auto kitten = Kitten(9);
   for (auto& i : std_vector_of_id) {
-    std_vector_of_kitten.push_back(kitten);
-    pvc_vector_of_kitten.push_back(kitten);
+    std_vector_of_kitten.push_back(Kitten(i));
+    std_vector_of_kitten.push_back(Kitten(i));
+    ExpectEqual();
   }
-  EXPECT_EQ(pvc_vector_of_kitten.empty(), std_vector_of_kitten.empty());
 }
-TEST_F(VectorTest, Size_and_Capacity) {
+TEST_F(VectorTest, FrontAndBack) {
   for (const auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
     pvc_vector_of_kitten.emplace_back(i);
-    EXPECT_EQ(pvc_vector_of_kitten.size(), std_vector_of_kitten.size());
-    EXPECT_EQ(pvc_vector_of_kitten.capacity(), std_vector_of_kitten.capacity());
+    EXPECT_EQ(pvc_vector_of_kitten.front(),
+              std_vector_of_kitten.front());
+    EXPECT_EQ(pvc_vector_of_kitten.back(),
+              std_vector_of_kitten.back());
   }
 }
-TEST_F(VectorTest, Front) {
-  for (const auto& i : std_vector_of_id) {
+TEST_F(VectorTest, Resize) {
+  for (int i = 0; i != 37; ++i) {
     std_vector_of_kitten.emplace_back(i);
     pvc_vector_of_kitten.emplace_back(i);
-    EXPECT_EQ(pvc_vector_of_kitten.front(), std_vector_of_kitten.front());
   }
-}
-TEST_F(VectorTest, Back) {
-  for (const auto& i : std_vector_of_id) {
-    std_vector_of_kitten.emplace_back(i);
-    pvc_vector_of_kitten.emplace_back(i);
-    EXPECT_EQ(pvc_vector_of_kitten.back(), std_vector_of_kitten.back());
-  }
+  std_vector_of_kitten.resize(73, std_vector_of_kitten.back());
+  pvc_vector_of_kitten.resize(73, pvc_vector_of_kitten.back());
+  ExpectEqual();
+  std_vector_of_kitten.resize(37);
+  pvc_vector_of_kitten.resize(37);
+  ExpectEqual();
+  std_vector_of_kitten.resize(1);
+  pvc_vector_of_kitten.resize(1);
+  ExpectEqual();
+  std_vector_of_kitten.resize(0);
+  pvc_vector_of_kitten.resize(0);
+  ExpectEqual();
 }
 TEST_F(VectorTest, PopBack) {
   for (const auto& i : std_vector_of_id) {
@@ -111,7 +116,10 @@ TEST_F(VectorTest, PopBack) {
   while (!std_vector_of_kitten.empty()) {
     std_vector_of_kitten.pop_back();
     pvc_vector_of_kitten.pop_back();
-    EXPECT_EQ(pvc_vector_of_kitten.empty(), std_vector_of_kitten.empty());
+    EXPECT_EQ(pvc_vector_of_kitten.front(),
+              std_vector_of_kitten.front());
+    EXPECT_EQ(pvc_vector_of_kitten.back(),
+              std_vector_of_kitten.back());
   }
 }
 TEST_F(VectorTest, At) {
@@ -119,16 +127,8 @@ TEST_F(VectorTest, At) {
   for (const auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
     pvc_vector_of_kitten.emplace_back(i);
-    EXPECT_EQ(pvc_vector_of_kitten.at(j), std_vector_of_kitten.at(j));
-    j++;
-  }
-}
-TEST_F(VectorTest, operator) {
-  int j = 0;
-  for (const auto& i : std_vector_of_id) {
-    std_vector_of_kitten.emplace_back(i);
-    pvc_vector_of_kitten.emplace_back(i);
-    EXPECT_EQ(pvc_vector_of_kitten[j], std_vector_of_kitten[j]);
+    EXPECT_EQ(pvc_vector_of_kitten.at(j),
+              std_vector_of_kitten.at(j));
     j++;
   }
 }
@@ -141,6 +141,7 @@ TEST_F(VectorTest, BeginAndEnd) {
   auto iter_std = std_vector_of_kitten.begin();
   while (iter_pvc != pvc_vector_of_kitten.end()) {
     EXPECT_EQ(*iter_pvc, *iter_std);
+    EXPECT_EQ(iter_pvc->id, iter_std->id);
     ++iter_pvc;
     ++iter_std;
   }
