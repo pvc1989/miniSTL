@@ -1,4 +1,4 @@
-// Copyright 2019 Weicheng Pei
+// Copyright 2019 Minghao Yang and Weicheng Pei
 
 #include "vector.h"
 
