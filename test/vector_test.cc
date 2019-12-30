@@ -28,7 +28,6 @@ class VectorTest : public ::testing::Test {
   std::vector<Kitten> std_vector_of_kitten;
   pvc::vector<Kitten> pvc_vector_of_kitten;
 };
-
 TEST_F(VectorTest, Construction_1) {
   pvc_vector_of_kitten = pvc::vector<Kitten>(4);
   std_vector_of_kitten = std::vector<Kitten>(4);
@@ -39,7 +38,6 @@ TEST_F(VectorTest, Construction_1) {
   EXPECT_EQ(pvc_vector.size(), std_vector.size());
   EXPECT_EQ(pvc_vector.capacity(), std_vector.capacity());
 }
-
 TEST_F(VectorTest, Construction_2) {
   auto kitten = Kitten(9);
   auto size = 4;
@@ -54,7 +52,6 @@ TEST_F(VectorTest, Construction_2) {
     EXPECT_EQ(pvc_vector[i], std_vector[i]);
   }
 }
-
 TEST_F(VectorTest, Construction_3) {
   auto list = {1, 2, 3, 5, 6};
   auto pvc_vector = pvc::vector<int>(list);
@@ -69,11 +66,9 @@ TEST_F(VectorTest, Construction_3) {
   EXPECT_EQ(pvc_vector.size(), std_vector.size());
   EXPECT_EQ(pvc_vector.capacity(), std_vector.capacity());
 }
-
 TEST_F(VectorTest, Empty) {
   EXPECT_EQ(pvc_vector_of_kitten.empty(), std_vector_of_kitten.empty());
 }
-
 TEST_F(VectorTest, EmplaceBack) {
   for (auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
@@ -81,7 +76,6 @@ TEST_F(VectorTest, EmplaceBack) {
   }
   EXPECT_EQ(pvc_vector_of_kitten.empty(), std_vector_of_kitten.empty());
 }
-
 TEST_F(VectorTest, Resize) {
   auto kitten = Kitten(9);
   for (auto& i : std_vector_of_id) {
@@ -97,7 +91,6 @@ TEST_F(VectorTest, Resize) {
   EXPECT_EQ(pvc_vector_of_kitten.size(), std_vector_of_kitten.size());
   EXPECT_EQ(pvc_vector_of_kitten.capacity(), std_vector_of_kitten.capacity());
 }
-
 TEST_F(VectorTest, PushBack) {
   auto kitten = Kitten(9);
   for (auto& i : std_vector_of_id) {
@@ -106,7 +99,6 @@ TEST_F(VectorTest, PushBack) {
   }
   EXPECT_EQ(pvc_vector_of_kitten.empty(), std_vector_of_kitten.empty());
 }
-
 TEST_F(VectorTest, Size_and_Capacity) {
   for (const auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
@@ -115,7 +107,6 @@ TEST_F(VectorTest, Size_and_Capacity) {
     EXPECT_EQ(pvc_vector_of_kitten.capacity(), std_vector_of_kitten.capacity());
   }
 }
-
 TEST_F(VectorTest, Front) {
   for (const auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
@@ -123,7 +114,6 @@ TEST_F(VectorTest, Front) {
     EXPECT_EQ(pvc_vector_of_kitten.front(), std_vector_of_kitten.front());
   }
 }
-
 TEST_F(VectorTest, Back) {
   for (const auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
@@ -131,7 +121,6 @@ TEST_F(VectorTest, Back) {
     EXPECT_EQ(pvc_vector_of_kitten.back(), std_vector_of_kitten.back());
   }
 }
-
 TEST_F(VectorTest, PopBack) {
   for (const auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
@@ -143,7 +132,6 @@ TEST_F(VectorTest, PopBack) {
     EXPECT_EQ(pvc_vector_of_kitten.empty(), std_vector_of_kitten.empty());
   }
 }
-
 TEST_F(VectorTest, At) {
   int j = 0;
   for (const auto& i : std_vector_of_id) {
@@ -153,7 +141,6 @@ TEST_F(VectorTest, At) {
     j++;
   }
 }
-
 TEST_F(VectorTest, operator) {
   int j = 0;
   for (const auto& i : std_vector_of_id) {
@@ -163,8 +150,6 @@ TEST_F(VectorTest, operator) {
     j++;
   }
 }
-
-
 TEST_F(VectorTest, Iterator) {
   for (const auto& i : std_vector_of_id) {
     pvc_vector_of_kitten.emplace_back(i);
@@ -183,7 +168,6 @@ TEST_F(VectorTest, Iterator) {
       Kitten(-2));
   EXPECT_EQ(iter, pvc_vector_of_kitten.end());
 }
-
 TEST_F(VectorTest, Equal) {
   auto new_vector_of_kitten = decltype(pvc_vector_of_kitten)();
   for (const auto& i : std_vector_of_id) {
@@ -195,7 +179,6 @@ TEST_F(VectorTest, Equal) {
   EXPECT_FALSE(pvc_vector_of_kitten != pvc_vector_of_kitten);
   EXPECT_FALSE(new_vector_of_kitten != pvc_vector_of_kitten);
 }
-
 TEST_F(VectorTest, Swap) {
   auto list_a = {1, 2, 3, 4};
   auto list_b = {5, 6};
