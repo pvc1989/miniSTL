@@ -76,7 +76,7 @@ TEST_F(VectorTest, EmplaceBack) {
 TEST_F(VectorTest, PushBack) {
   for (auto& i : std_vector_of_id) {
     std_vector_of_kitten.push_back(Kitten(i));
-    std_vector_of_kitten.push_back(Kitten(i));
+    pvc_vector_of_kitten.push_back(Kitten(i));
     ExpectEqual();
   }
 }
