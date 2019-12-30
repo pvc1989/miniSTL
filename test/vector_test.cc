@@ -12,8 +12,8 @@ class VectorTest : public ::testing::Test {
   // helper class
   struct Kitten {
     int id;
-    explicit Kitten(int id) : id(id) { }
-    Kitten() = default;
+    explicit Kitten(int id) : id(id) {}
+    Kitten() : id(-1) {}
     ~Kitten() noexcept = default;
     Kitten(const Kitten&) = default;
     Kitten& operator=(const Kitten&) = default;
