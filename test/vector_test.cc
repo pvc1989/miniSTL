@@ -28,46 +28,52 @@ class VectorTest : public ::testing::Test {
   std::vector<Kitten> std_vector_of_kitten;
   pvc::vector<Kitten> pvc_vector_of_kitten;
 };
-TEST_F(VectorTest, Construction_1) {
-  pvc_vector_of_kitten = pvc::vector<Kitten>(4);
-  std_vector_of_kitten = std::vector<Kitten>(4);
-  EXPECT_EQ(pvc_vector_of_kitten.size(), std_vector_of_kitten.size());
-  EXPECT_EQ(pvc_vector_of_kitten.capacity(), std_vector_of_kitten.capacity());
-  auto pvc_vector = pvc::vector<Kitten>(4);
-  auto std_vector = std::vector<Kitten>(4);
+TEST_F(VectorTest, ConstructorDefault) {
+  auto pvc_vector = pvc::vector<Kitten>();
+  auto std_vector = std::vector<Kitten>();
+  EXPECT_EQ(pvc_vector.empty(), std_vector.empty());
   EXPECT_EQ(pvc_vector.size(), std_vector.size());
   EXPECT_EQ(pvc_vector.capacity(), std_vector.capacity());
 }
-TEST_F(VectorTest, Construction_2) {
-  auto kitten = Kitten(9);
-  auto size = 4;
-  pvc_vector_of_kitten = pvc::vector<Kitten>(size, kitten);
-  std_vector_of_kitten = std::vector<Kitten>(size, kitten);
-  EXPECT_EQ(pvc_vector_of_kitten.size(), std_vector_of_kitten.size());
-  EXPECT_EQ(pvc_vector_of_kitten.capacity(), std_vector_of_kitten.capacity());
-  auto pvc_vector = pvc::vector<Kitten>(size, kitten);
-  auto std_vector = std::vector<Kitten>(size, kitten);
+TEST_F(VectorTest, ConstructorWithSize) {
+  auto size = 73;
+  auto pvc_vector = pvc::vector<Kitten>(size);
+  auto std_vector = std::vector<Kitten>(size);
   EXPECT_EQ(pvc_vector.size(), std_vector.size());
+  EXPECT_EQ(pvc_vector.capacity(), std_vector.capacity());
   for (int i = 0; i < size; i++) {
     EXPECT_EQ(pvc_vector[i], std_vector[i]);
   }
 }
-TEST_F(VectorTest, Construction_3) {
-  auto list = {1, 2, 3, 5, 6};
+TEST_F(VectorTest, ConstructorWithSizeAndValue) {
+  auto size = 73;
+  auto value = Kitten(size);
+  auto pvc_vector = pvc::vector<Kitten>(size, value);
+  auto std_vector = std::vector<Kitten>(size, value);
+  EXPECT_EQ(pvc_vector.size(), std_vector.size());
+  EXPECT_EQ(pvc_vector.capacity(), std_vector.capacity());
+  for (int i = 0; i < size; i++) {
+    EXPECT_EQ(pvc_vector[i], std_vector[i]);
+  }
+}
+TEST_F(VectorTest, ConstructorWithInitializerList) {
+  auto list = {1, 2, 3, 4, 5, 6};
   auto pvc_vector = pvc::vector<int>(list);
   auto std_vector = std::vector<int>(list);
   EXPECT_EQ(pvc_vector.size(), std_vector.size());
-  for (int i = 0; i < 5; i++) {
-    EXPECT_EQ(pvc_vector.at(i), std_vector.at(i));
+  EXPECT_EQ(pvc_vector.capacity(), std_vector.capacity());
+  for (int i = 0; i < list.size(); i++) {
+    EXPECT_EQ(pvc_vector[i], std_vector[i]);
   }
-  list = {2, 4};
-  pvc_vector = list;
-  std_vector = list;
+}
+TEST_F(VectorTest, ConstructorWithBracedList) {
+  pvc::vector<int> pvc_vector{1, 2, 3, 4, 5, 6};
+  std::vector<int> std_vector{1, 2, 3, 4, 5, 6};
   EXPECT_EQ(pvc_vector.size(), std_vector.size());
   EXPECT_EQ(pvc_vector.capacity(), std_vector.capacity());
-}
-TEST_F(VectorTest, Empty) {
-  EXPECT_EQ(pvc_vector_of_kitten.empty(), std_vector_of_kitten.empty());
+  for (int i = 0; i < pvc_vector.size(); i++) {
+    EXPECT_EQ(pvc_vector[i], std_vector[i]);
+  }
 }
 TEST_F(VectorTest, EmplaceBack) {
   for (auto& i : std_vector_of_id) {
