@@ -114,12 +114,12 @@ TEST_F(VectorTest, PopBack) {
     pvc_vector_of_kitten.emplace_back(i);
   }
   while (!std_vector_of_kitten.empty()) {
-    std_vector_of_kitten.pop_back();
-    pvc_vector_of_kitten.pop_back();
-    EXPECT_EQ(pvc_vector_of_kitten.front(),
-              std_vector_of_kitten.front());
     EXPECT_EQ(pvc_vector_of_kitten.back(),
               std_vector_of_kitten.back());
+    EXPECT_EQ(pvc_vector_of_kitten.front(),
+              std_vector_of_kitten.front());
+    std_vector_of_kitten.pop_back();
+    pvc_vector_of_kitten.pop_back();
   }
 }
 TEST_F(VectorTest, At) {
