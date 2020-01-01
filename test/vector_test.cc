@@ -98,6 +98,11 @@ TEST_F(VectorTest, Resize) {
   std_vector_of_kitten.resize(73, std_vector_of_kitten.back());
   pvc_vector_of_kitten.resize(73, pvc_vector_of_kitten.back());
   ExpectEqual();
+  while (std_vector_of_kitten.size() < std_vector_of_kitten.capacity()) {
+    std_vector_of_kitten.emplace_back();
+    pvc_vector_of_kitten.emplace_back();
+  }
+  ExpectEqual();
   std_vector_of_kitten.resize(37);
   pvc_vector_of_kitten.resize(37);
   ExpectEqual();
