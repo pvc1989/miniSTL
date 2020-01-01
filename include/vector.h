@@ -135,13 +135,13 @@ class vector {
   // modifying methods
   void resize(size_type count, const T& value) {
     if (count > capacity_) {
-      capacity_ = count;
+      while (capacity_ < count) {capacity_ *= 2;}
       auto new_array_ = std::make_unique<T[]>(count);
-      for (int i = 0; i < size_; i++) {
-        std::swap(new_array_[i], array_[i]);
-      }
       for (int i = size_; i < count; i++) {
         new_array_[i] = value;
+      }
+      for (int i = 0; i < size_; i++) {
+        std::swap(new_array_[i], array_[i]);
       }
       array_.swap(new_array_);
     } else if (count > size_) {
