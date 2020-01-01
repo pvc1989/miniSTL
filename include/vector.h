@@ -183,9 +183,8 @@ class vector {
     }
   }
   void clear() noexcept {
-    while(not empty()) {
-      pop_back();
-    }
+    size_ = 0;
+    array_.reset(new T[0]);
   }
   void swap(vector& other) {
     std::swap(size_, other.size_);
