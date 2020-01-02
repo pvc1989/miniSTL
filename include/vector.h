@@ -230,7 +230,7 @@ bool operator==(const vector<T>& lhs,
 template <class T>
 bool operator!=(const vector<T>& lhs,
                 const vector<T>& rhs) noexcept {
-  return not (lhs == rhs);                 
+  return !(lhs == rhs);                 
 }
 
 }  // namespace pvc

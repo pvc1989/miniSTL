@@ -83,7 +83,7 @@ class forward_list {
       return ptr_node == rhs.ptr_node;
     }
     bool operator!=(iterator const& rhs) const noexcept {
-      return not (*this == rhs);
+      return !(*this == rhs);
     }
 
     iterator& operator++() noexcept {
@@ -119,7 +119,7 @@ class forward_list {
   const_iterator end() const noexcept { return cend(); }
 
  public:  // non-modifying methods
-  bool empty() const noexcept { return not uptr_head_; }
+  bool empty() const noexcept { return !uptr_head_; }
 
  public:  // modifying methods
   template <class... Args>
@@ -137,7 +137,7 @@ class forward_list {
   }
 
   void clear() noexcept {
-    while(not empty()) {
+    while(!empty()) {
       pop_front();
     }
   }
@@ -167,7 +167,7 @@ bool operator==(const forward_list<T>& lhs,
 template <class T>
 bool operator!=(const forward_list<T>& lhs,
                 const forward_list<T>& rhs) noexcept {
-  return not (lhs == rhs);                 
+  return !(lhs == rhs);                 
 }
 
 // using raw pointers
@@ -251,7 +251,7 @@ class forward_list {
       return ptr_node == rhs.ptr_node;
     }
     bool operator!=(iterator const& rhs) const noexcept {
-      return not (*this == rhs);
+      return !(*this == rhs);
     }
 
     iterator& operator++() noexcept {
@@ -287,7 +287,7 @@ class forward_list {
   const_iterator end() const noexcept { return cend(); }
 
  public:  // non-modifying methods
-  bool empty() const noexcept { return not ptr_head_; }
+  bool empty() const noexcept { return !ptr_head_; }
 
  public:  // modifying methods
   template <class... Args>
@@ -304,7 +304,7 @@ class forward_list {
   }
 
   void clear() noexcept {
-    while(not empty()) {
+    while(!empty()) {
       pop_front();
     }
   }
@@ -333,7 +333,7 @@ bool operator==(const forward_list<T>& lhs,
 template <class T>
 bool operator!=(const forward_list<T>& lhs,
                 const forward_list<T>& rhs) noexcept {
-  return not (lhs == rhs);                 
+  return !(lhs == rhs);                 
 }
 
 }  // namespace raw
