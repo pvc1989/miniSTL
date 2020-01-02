@@ -12,6 +12,6 @@ mkdir build
 cd build
 cmake -S .. -B .  # cmake 3.13.5+
 cmake --build .
-cd test
-./forward_list_test
+./test/forward_list
+./test/vector
 ```
