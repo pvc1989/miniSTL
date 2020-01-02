@@ -27,7 +27,7 @@ class VectorTest : public ::testing::Test {
   std::vector<Kitten> std_vector_of_kitten;
   pvc::vector<Kitten> pvc_vector_of_kitten;
   // common operations
-  void ExpectEqual() {
+  void ExpectEqual() const {
     EXPECT_EQ(pvc_vector_of_kitten.empty(),
               std_vector_of_kitten.empty());
     EXPECT_EQ(pvc_vector_of_kitten.size(),

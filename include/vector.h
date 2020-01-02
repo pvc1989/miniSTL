@@ -111,8 +111,8 @@ class vector {
   }
   reference front() { return array_[0]; }
   reference back() { return array_[size_ - 1]; }
-  size_type size() { return size_; }
-  size_type capacity() { return capacity_; }
+  size_type size() const { return size_; }
+  size_type capacity() const { return capacity_; }
   T& operator[] (size_type pos) {
     return array_[pos];
   }
