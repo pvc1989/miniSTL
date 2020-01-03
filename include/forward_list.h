@@ -11,6 +11,7 @@
 
 namespace pvc {
 
+#ifdef PVC_USE_SMART_POINTER_
 template <class T>
 class forward_list {
  public:
@@ -170,9 +171,7 @@ bool operator!=(const forward_list<T>& lhs,
   return !(lhs == rhs);                 
 }
 
-// using raw pointers
-namespace raw {
-
+#else
 template <class T>
 class forward_list {
  public:
@@ -336,7 +335,7 @@ bool operator!=(const forward_list<T>& lhs,
   return !(lhs == rhs);                 
 }
 
-}  // namespace raw
+#endif
 }  // namespace pvc
 
 #endif  // PVC_FORWARD_LIST_H_
