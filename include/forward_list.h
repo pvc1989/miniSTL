@@ -51,7 +51,7 @@ class forward_list {
   forward_list& operator=(forward_list&& that) {
     if (this != &that) {
       clear();
-      uptr_head_.swap(that.uptr_head_);
+      ptr_head_.swap(that.ptr_head_);
     }
     return *this;
   }
@@ -59,14 +59,14 @@ class forward_list {
  private:
   struct Node {
     value_type value;
-    std::unique_ptr<Node> uptr_next;
+    std::unique_ptr<Node> ptr_next;
 
     template <class... Args>
     explicit Node(Args&&... args) : value(std::forward<Args>(args)...) { }
   };
 
  private:
-  std::unique_ptr<Node> uptr_head_{ nullptr };
+  std::unique_ptr<Node> ptr_head_{ nullptr };
 
  public:  // iterator and related methods
   struct iterator : public pvc::iterator<
@@ -88,17 +88,17 @@ class forward_list {
     }
 
     iterator& operator++() noexcept {
-      ptr_node = ptr_node->uptr_next.get();
+      ptr_node = ptr_node->ptr_next.get();
       return *this;
     }
     iterator operator++(int) noexcept {
       auto iter = iterator(ptr_node);
-      ptr_node = ptr_node->uptr_next.get();
+      ptr_node = ptr_node->ptr_next.get();
       return iter;
     }
   };
 
-  iterator begin() noexcept { return uptr_head_.get(); };
+  iterator begin() noexcept { return ptr_head_.get(); };
   iterator end() noexcept { return nullptr; }
 
   struct const_iterator : public iterator {
@@ -113,28 +113,28 @@ class forward_list {
     pointer operator->() const noexcept { return this->iterator::operator->(); }
   };
 
-  const_iterator cbegin() const noexcept { return uptr_head_.get(); };
+  const_iterator cbegin() const noexcept { return ptr_head_.get(); };
   const_iterator cend() const noexcept { return nullptr; }
 
   const_iterator begin() const noexcept { return cbegin(); };
   const_iterator end() const noexcept { return cend(); }
 
  public:  // non-modifying methods
-  bool empty() const noexcept { return !uptr_head_; }
+  bool empty() const noexcept { return !ptr_head_; }
 
  public:  // modifying methods
   template <class... Args>
   void emplace_front(Args&&... args) {
-    auto uptr_new = std::make_unique<Node>(std::forward<Args>(args)...);
-    uptr_new->uptr_next.reset(uptr_head_.release());
-    uptr_new.swap(uptr_head_);
+    auto ptr_new = std::make_unique<Node>(std::forward<Args>(args)...);
+    ptr_new->ptr_next.reset(ptr_head_.release());
+    ptr_new.swap(ptr_head_);
   }
 
-  reference front() { return uptr_head_->value; }
+  reference front() { return ptr_head_->value; }
 
   void pop_front() noexcept {
-    auto ptr_next = uptr_head_->uptr_next.release();
-    uptr_head_.reset(ptr_next);
+    auto ptr_next = ptr_head_->ptr_next.release();
+    ptr_head_.reset(ptr_next);
   }
 
   void clear() noexcept {
@@ -145,11 +145,11 @@ class forward_list {
 
   template <class... Args> 
   iterator emplace_after(iterator pos, Args&&... args) {
-    auto& uptr_next = pos.ptr_node->uptr_next;
-    auto uptr_new = std::make_unique<Node>(std::forward<Args>(args)...);
-    uptr_new->uptr_next.reset(uptr_next.release());
-    uptr_next.reset(uptr_new.release());
-    return iterator(uptr_next.get());
+    auto& ptr_next = pos.ptr_node->ptr_next;
+    auto ptr_new = std::make_unique<Node>(std::forward<Args>(args)...);
+    ptr_new->ptr_next.reset(ptr_next.release());
+    ptr_next.reset(ptr_new.release());
+    return iterator(ptr_next.get());
   }
 };
 
