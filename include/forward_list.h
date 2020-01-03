@@ -112,96 +112,40 @@ class forward_list {
   }
 
  public:  // iterators and related methods
-#ifdef PVC_USE_SMART_POINTER_
-  struct iterator : public pvc::iterator<
+  class iterator : public pvc::iterator<
       std::forward_iterator_tag, forward_list::value_type> {
     friend forward_list;
    protected:
     Node* ptr_node{ nullptr };
    public:
     iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
-
     reference operator*() const noexcept { return ptr_node->value; }
     pointer operator->() const noexcept { return &this->operator*(); }
-
     bool operator==(iterator const& rhs) const noexcept {
       return ptr_node == rhs.ptr_node;
     }
     bool operator!=(iterator const& rhs) const noexcept {
       return !(*this == rhs);
     }
-
     iterator& operator++() noexcept {
-      ptr_node = ptr_node->ptr_next.get();
+      ptr_node = &(*(ptr_node->ptr_next));
       return *this;
     }
     iterator operator++(int) noexcept {
       auto iter = iterator(ptr_node);
-      ptr_node = ptr_node->ptr_next.get();
+      ptr_node = &(*(ptr_node->ptr_next));
       return iter;
     }
-  };
-
-  struct const_iterator : public iterator {
+  };  // iterator
+  class const_iterator : public iterator {
     friend forward_list;
    public:
     using reference = typename forward_list::const_reference;
     using pointer = typename forward_list::const_pointer;
-
     const_iterator(Node* ptr_node) noexcept : iterator(ptr_node) { }
-
     reference operator*() const noexcept { return this->iterator::operator*(); }
     pointer operator->() const noexcept { return this->iterator::operator->(); }
-  };
-
-#else
-  struct iterator : public pvc::iterator<
-      std::forward_iterator_tag, forward_list::value_type> {
-    friend forward_list;
-   private:
-    Node* ptr_node{ nullptr };
-   public:
-    iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
-
-    reference operator*() const noexcept {
-      return ptr_node->value;
-    }
-    pointer operator->() const noexcept {
-      return &this->operator*();
-    }
-
-    bool operator==(iterator const& rhs) const noexcept {
-      return ptr_node == rhs.ptr_node;
-    }
-    bool operator!=(iterator const& rhs) const noexcept {
-      return !(*this == rhs);
-    }
-
-    iterator& operator++() noexcept {
-      ptr_node = ptr_node->ptr_next;
-      return *this;
-    }
-    iterator operator++(int) noexcept {
-      auto iter_old = iterator(ptr_node);
-      ptr_node = ptr_node->ptr_next;
-      return iter_old;
-    }
-  };
-
-
-  struct const_iterator : public iterator {
-    friend forward_list;
-   public:
-    using reference = typename forward_list::const_reference;
-    using pointer = typename forward_list::const_pointer;
-
-    const_iterator(Node* ptr_node) noexcept : iterator(ptr_node) { }
-
-    reference operator*() const noexcept { return this->iterator::operator*(); }
-    pointer operator->() const noexcept { return this->iterator::operator->(); }
-  };
-
-#endif
+  };  // const_iterator
   // range related methods:
   iterator begin() noexcept { return &(*ptr_head_); }
   const_iterator begin() const noexcept { return cbegin(); };
