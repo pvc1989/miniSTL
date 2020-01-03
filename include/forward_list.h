@@ -111,8 +111,8 @@ class forward_list {
 #endif
   }
 
+ public:  // iterators and related methods
 #ifdef PVC_USE_SMART_POINTER_
- public:  // iterator and related methods
   struct iterator : public pvc::iterator<
       std::forward_iterator_tag, forward_list::value_type> {
     friend forward_list;
@@ -142,9 +142,6 @@ class forward_list {
     }
   };
 
-  iterator begin() noexcept { return ptr_head_.get(); };
-  iterator end() noexcept { return nullptr; }
-
   struct const_iterator : public iterator {
     friend forward_list;
    public:
@@ -157,26 +154,7 @@ class forward_list {
     pointer operator->() const noexcept { return this->iterator::operator->(); }
   };
 
-  const_iterator cbegin() const noexcept { return ptr_head_.get(); };
-  const_iterator cend() const noexcept { return nullptr; }
-
-  const_iterator begin() const noexcept { return cbegin(); };
-  const_iterator end() const noexcept { return cend(); }
-
- public:  // modifying methods
-  template <class... Args> 
-  iterator emplace_after(iterator pos, Args&&... args) {
-    auto& ptr_next = pos.ptr_node->ptr_next;
-    auto ptr_new = std::make_unique<Node>(std::forward<Args>(args)...);
-    ptr_new->ptr_next.reset(ptr_next.release());
-    ptr_next.reset(ptr_new.release());
-    return iterator(ptr_next.get());
-  }
-};
-
 #else
-
- public:  // iterator and related methods
   struct iterator : public pvc::iterator<
       std::forward_iterator_tag, forward_list::value_type> {
     friend forward_list;
@@ -210,8 +188,6 @@ class forward_list {
     }
   };
 
-  iterator begin() noexcept { return ptr_head_; }
-  iterator end() noexcept { return nullptr; }
 
   struct const_iterator : public iterator {
     friend forward_list;
@@ -225,23 +201,31 @@ class forward_list {
     pointer operator->() const noexcept { return this->iterator::operator->(); }
   };
 
-  const_iterator cbegin() const noexcept { return ptr_head_; };
-  const_iterator cend() const noexcept { return nullptr; }
-
+#endif
+  // range related methods:
+  iterator begin() noexcept { return &(*ptr_head_); }
   const_iterator begin() const noexcept { return cbegin(); };
+  const_iterator cbegin() const noexcept { return &(*ptr_head_); };
+  iterator end() noexcept { return nullptr; }
   const_iterator end() const noexcept { return cend(); }
-
- public:  // modifying methods
+  const_iterator cend() const noexcept { return nullptr; }
+  // construct a new element after an element given by an iterator:
   template <class... Args> 
   iterator emplace_after(iterator pos, Args&&... args) {
+#ifdef PVC_USE_SMART_POINTER_
+    auto& ptr_next = pos.ptr_node->ptr_next;
+    auto ptr_new = std::make_unique<Node>(std::forward<Args>(args)...);
+    ptr_new->ptr_next.reset(ptr_next.release());
+    ptr_next.reset(ptr_new.release());
+    return iterator(ptr_next.get());
+#else
     auto& pos_next = pos.ptr_node->ptr_next;
     auto ptr_new = new Node(pos_next, std::forward<Args>(args)...);
     pos_next = ptr_new;
     return ++pos;
-  }
-};
-
 #endif
+  }
+};  // forward_list
 
 template <class T>
 bool operator==(const forward_list<T>& lhs,
