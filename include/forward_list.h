@@ -54,6 +54,16 @@ class forward_list {
     }
     return *this;
   }
+  // accessors:
+  bool empty() const noexcept { return !ptr_head_; }
+  reference front() { return ptr_head_->value; }
+  const_reference front() const { return ptr_head_->value; }
+  // mutators:
+  void clear() noexcept {
+    while(!empty()) {
+      pop_front();
+    }
+  }
 
 #ifdef PVC_USE_SMART_POINTER_
  private:
@@ -119,9 +129,6 @@ class forward_list {
   const_iterator begin() const noexcept { return cbegin(); };
   const_iterator end() const noexcept { return cend(); }
 
- public:  // non-modifying methods
-  bool empty() const noexcept { return !ptr_head_; }
-
  public:  // modifying methods
   template <class... Args>
   void emplace_front(Args&&... args) {
@@ -130,17 +137,9 @@ class forward_list {
     ptr_new.swap(ptr_head_);
   }
 
-  reference front() { return ptr_head_->value; }
-
   void pop_front() noexcept {
     auto ptr_next = ptr_head_->ptr_next.release();
     ptr_head_.reset(ptr_next);
-  }
-
-  void clear() noexcept {
-    while(!empty()) {
-      pop_front();
-    }
   }
 
   template <class... Args> 
@@ -222,27 +221,16 @@ class forward_list {
   const_iterator begin() const noexcept { return cbegin(); };
   const_iterator end() const noexcept { return cend(); }
 
- public:  // non-modifying methods
-  bool empty() const noexcept { return !ptr_head_; }
-
  public:  // modifying methods
   template <class... Args>
   void emplace_front(Args&&... args) {
     ptr_head_ = new Node(ptr_head_, std::forward<Args>(args)...);
   }
 
-  reference front() { return ptr_head_->value; }
-
   void pop_front() noexcept {
     auto ptr_old = ptr_head_;
     ptr_head_ = ptr_head_->ptr_next;
     delete ptr_old;
-  }
-
-  void clear() noexcept {
-    while(!empty()) {
-      pop_front();
-    }
   }
 
   template <class... Args> 
