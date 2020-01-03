@@ -29,18 +29,18 @@ class forward_list {
   forward_list& operator=(const forward_list& that) {
     if (this != &that) {
       clear();
-      auto iter_on_that = that.begin();
+      auto iter_of_that = that.begin();
       auto iend_of_that = that.end();
       // add the 1st item, if any:
-      if (iter_on_that != iend_of_that) {
-        emplace_front(*iter_on_that);
-        ++iter_on_that;
+      if (iter_of_that != iend_of_that) {
+        emplace_front(*iter_of_that);
+        ++iter_of_that;
       }
       // add the other items, if any:
-      auto iter_on_this = begin();
-      while (iter_on_that != iend_of_that) {
-        iter_on_this = emplace_after(iter_on_this, *iter_on_that);
-        ++iter_on_that;
+      auto iter_of_this = begin();
+      while (iter_of_that != iend_of_that) {
+        iter_of_this = emplace_after(iter_of_this, *iter_of_that);
+        ++iter_of_that;
       }
     }
     return *this;
@@ -191,18 +191,18 @@ class forward_list {
   forward_list& operator=(const forward_list& that) {
     if (this != &that) {
       clear();
-      auto iter_on_that = that.begin();
+      auto iter_of_that = that.begin();
       auto iend_of_that = that.end();
       // add the 1st item, if any:
-      if (iter_on_that != iend_of_that) {
-        emplace_front(*iter_on_that);
-        ++iter_on_that;
+      if (iter_of_that != iend_of_that) {
+        emplace_front(*iter_of_that);
+        ++iter_of_that;
       }
       // add the other items, if any:
-      auto iter_on_this = begin();
-      while (iter_on_that != iend_of_that) {
-        iter_on_this = emplace_after(iter_on_this, *iter_on_that);
-        ++iter_on_that;
+      auto iter_of_this = begin();
+      while (iter_of_that != iend_of_that) {
+        iter_of_this = emplace_after(iter_of_this, *iter_of_that);
+        ++iter_of_that;
       }
     }
     return *this;
