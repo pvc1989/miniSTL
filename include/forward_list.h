@@ -11,7 +11,6 @@
 
 namespace pvc {
 
-#ifdef PVC_USE_SMART_POINTER_
 template <class T>
 class forward_list {
  public:
@@ -51,11 +50,12 @@ class forward_list {
   forward_list& operator=(forward_list&& that) {
     if (this != &that) {
       clear();
-      ptr_head_.swap(that.ptr_head_);
+      std::swap(this->ptr_head_, that.ptr_head_);
     }
     return *this;
   }
 
+#ifdef PVC_USE_SMART_POINTER_
  private:
   struct Node {
     value_type value;
@@ -154,51 +154,6 @@ class forward_list {
 };
 
 #else
-template <class T>
-class forward_list {
- public:
-  using value_type = T;
-  using size_type = std::size_t;
-  using reference = value_type &;
-  using const_reference = const value_type &;
-  using pointer = value_type *;
-  using const_pointer = const value_type *;
-
- public:
-  forward_list() = default;
-  ~forward_list() noexcept { clear(); }
-  // copy operations:
-  forward_list(const forward_list& that) { *this = that; }
-  forward_list& operator=(const forward_list& that) {
-    if (this != &that) {
-      clear();
-      auto iter_of_that = that.begin();
-      auto iend_of_that = that.end();
-      // add the 1st item, if any:
-      if (iter_of_that != iend_of_that) {
-        emplace_front(*iter_of_that);
-        ++iter_of_that;
-      }
-      // add the other items, if any:
-      auto iter_of_this = begin();
-      while (iter_of_that != iend_of_that) {
-        iter_of_this = emplace_after(iter_of_this, *iter_of_that);
-        ++iter_of_that;
-      }
-    }
-    return *this;
-  }
-  // move operations:
-  forward_list(forward_list&& that) { *this = std::move(that); }
-  forward_list& operator=(forward_list&& that) {
-    if (this != &that) {
-      clear();
-      ptr_head_ = that.ptr_head_;
-      that.ptr_head_ = nullptr;
-    }
-    return *this;
-  }
-
  private:
   struct Node {
     Node* ptr_next{ nullptr };
