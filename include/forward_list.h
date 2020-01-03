@@ -65,19 +65,30 @@ class forward_list {
     }
   }
 
-#ifdef PVC_USE_SMART_POINTER_
  private:
   struct Node {
+   public:  // type member:
+#ifdef PVC_USE_SMART_POINTER_
+    using Pointer = std::unique_ptr<Node>;
+#else
+    using Pointer = Node*;
+#endif
+   public:  // data members:
     value_type value;
-    std::unique_ptr<Node> ptr_next;
-
+    Pointer ptr_next;
+   public:  // constuctors:
     template <class... Args>
     explicit Node(Args&&... args) : value(std::forward<Args>(args)...) { }
+    template <class... Args>
+    explicit Node(Node* ptr_node, Args&&... args)
+      : ptr_next(ptr_node), value(std::forward<Args>(args)...) { }
   };
 
  private:
-  std::unique_ptr<Node> ptr_head_{ nullptr };
+  using NodePtr = typename Node::Pointer;
+  NodePtr ptr_head_{ nullptr };  // the only data member of forward_list<T>
 
+#ifdef PVC_USE_SMART_POINTER_
  public:  // iterator and related methods
   struct iterator : public pvc::iterator<
       std::forward_iterator_tag, forward_list::value_type> {
@@ -153,18 +164,6 @@ class forward_list {
 };
 
 #else
- private:
-  struct Node {
-    Node* ptr_next{ nullptr };
-    value_type value;
-
-    template <class... Args>
-    explicit Node(Node* ptr_node, Args&&... args)
-      : ptr_next(ptr_node), value(std::forward<Args>(args)...) { }
-  };
-
- private:
-  Node* ptr_head_{ nullptr };
 
  public:  // iterator and related methods
   struct iterator : public pvc::iterator<
