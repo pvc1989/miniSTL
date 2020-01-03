@@ -61,7 +61,7 @@ class forward_list {
     std::unique_ptr<Node> uptr_next;
 
     template <class... Args>
-    explicit Node(Args... args) : value(std::forward<Args>(args)...) { }
+    explicit Node(Args&&... args) : value(std::forward<Args>(args)...) { }
   };
 
  private:
@@ -224,7 +224,7 @@ class forward_list {
     value_type value;
 
     template <class... Args>
-    explicit Node(Node* ptr_node, Args... args)
+    explicit Node(Node* ptr_node, Args&&... args)
       : ptr_next(ptr_node), value(std::forward<Args>(args)...) { }
   };
 
