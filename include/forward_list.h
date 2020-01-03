@@ -155,19 +155,19 @@ class forward_list {
   const_iterator cend() const noexcept { return nullptr; }
   // construct a new element after an element given by an iterator:
   template <class... Args> 
-  iterator emplace_after(iterator pos, Args&&... args) {
+  iterator emplace_after(iterator iter, Args&&... args) {
 #ifdef PVC_USE_SMART_POINTER_
-    auto& ptr_next = pos.ptr_node->ptr_next;
-    auto ptr_new = std::make_unique<Node>(std::forward<Args>(args)...);
-    ptr_new->ptr_next.reset(ptr_next.release());
+    auto& ptr_next = iter.ptr_node->ptr_next;
+    auto ptr_new = std::make_unique<Node>(
+      ptr_next.release()/* raw pointer of the old head */,
+      std::forward<Args>(args).../* arguments for value */);
     ptr_next.reset(ptr_new.release());
-    return iterator(ptr_next.get());
 #else
-    auto& pos_next = pos.ptr_node->ptr_next;
-    auto ptr_new = new Node(pos_next, std::forward<Args>(args)...);
-    pos_next = ptr_new;
-    return ++pos;
+    auto& ptr_next = iter.ptr_node->ptr_next;
+    auto ptr_new = new Node(ptr_next, std::forward<Args>(args)...);
+    ptr_next = ptr_new;
 #endif
+    return ++iter;
   }
 };  // forward_list
 
