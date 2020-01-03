@@ -153,24 +153,6 @@ class forward_list {
   }
 };
 
-template <class T>
-bool operator==(const forward_list<T>& lhs,
-                const forward_list<T>& rhs) noexcept {
-  auto iter = lhs.begin();
-  const auto iend = lhs.end();
-  for (const auto& x : rhs) {
-    if (iter == iend || *iter != x) { return false; }
-    else { ++iter; }
-  }
-  if (iter == iend) { return true; }
-  else { return false; }  
-}
-template <class T>
-bool operator!=(const forward_list<T>& lhs,
-                const forward_list<T>& rhs) noexcept {
-  return !(lhs == rhs);                 
-}
-
 #else
 template <class T>
 class forward_list {
@@ -317,6 +299,8 @@ class forward_list {
   }
 };
 
+#endif
+
 template <class T>
 bool operator==(const forward_list<T>& lhs,
                 const forward_list<T>& rhs) noexcept {
@@ -335,7 +319,6 @@ bool operator!=(const forward_list<T>& lhs,
   return !(lhs == rhs);                 
 }
 
-#endif
 }  // namespace pvc
 
 #endif  // PVC_FORWARD_LIST_H_
