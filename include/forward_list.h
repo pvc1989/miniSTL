@@ -88,6 +88,29 @@ class forward_list {
   using NodePtr = typename Node::Pointer;
   NodePtr ptr_head_{ nullptr };  // the only data member of forward_list<T>
 
+ public:  // operations at the beginning:
+  template <class... Args>
+  void emplace_front(Args&&... args) {
+#ifdef PVC_USE_SMART_POINTER_
+    auto ptr_new = std::make_unique<Node>(
+      ptr_head_.release()/* raw pointer of the old head */,
+      std::forward<Args>(args).../* arguments for value */);
+    ptr_new.swap(ptr_head_);
+#else
+    ptr_head_ = new Node(ptr_head_, std::forward<Args>(args)...);
+#endif
+  }
+  void pop_front() noexcept {
+#ifdef PVC_USE_SMART_POINTER_
+    auto ptr_next = ptr_head_->ptr_next.release();
+    ptr_head_.reset(ptr_next);
+#else
+    auto ptr_old = ptr_head_;
+    ptr_head_ = ptr_head_->ptr_next;
+    delete ptr_old;
+#endif
+  }
+
 #ifdef PVC_USE_SMART_POINTER_
  public:  // iterator and related methods
   struct iterator : public pvc::iterator<
@@ -141,18 +164,6 @@ class forward_list {
   const_iterator end() const noexcept { return cend(); }
 
  public:  // modifying methods
-  template <class... Args>
-  void emplace_front(Args&&... args) {
-    auto ptr_new = std::make_unique<Node>(std::forward<Args>(args)...);
-    ptr_new->ptr_next.reset(ptr_head_.release());
-    ptr_new.swap(ptr_head_);
-  }
-
-  void pop_front() noexcept {
-    auto ptr_next = ptr_head_->ptr_next.release();
-    ptr_head_.reset(ptr_next);
-  }
-
   template <class... Args> 
   iterator emplace_after(iterator pos, Args&&... args) {
     auto& ptr_next = pos.ptr_node->ptr_next;
@@ -221,17 +232,6 @@ class forward_list {
   const_iterator end() const noexcept { return cend(); }
 
  public:  // modifying methods
-  template <class... Args>
-  void emplace_front(Args&&... args) {
-    ptr_head_ = new Node(ptr_head_, std::forward<Args>(args)...);
-  }
-
-  void pop_front() noexcept {
-    auto ptr_old = ptr_head_;
-    ptr_head_ = ptr_head_->ptr_next;
-    delete ptr_old;
-  }
-
   template <class... Args> 
   iterator emplace_after(iterator pos, Args&&... args) {
     auto& pos_next = pos.ptr_node->ptr_next;
