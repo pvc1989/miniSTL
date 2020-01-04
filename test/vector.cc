@@ -5,25 +5,13 @@
 #include <chrono>
 #include <vector>
 
+#include "abc/data/copy_only.h"
 #include "gtest/gtest.h"
 
 class VectorTest : public ::testing::Test {
  protected:
   // helper class
-  struct Kitten {
-    int id;
-    explicit Kitten(int id) : id(id) {}
-    Kitten() : id(-1) { Sleep(); }
-    ~Kitten() noexcept = default;
-    Kitten(const Kitten&) = default;
-    Kitten& operator=(const Kitten&) = default;
-    Kitten(Kitten&&) noexcept = default;
-    Kitten& operator=(Kitten&&) noexcept = default;
-    bool operator==(const Kitten& that) const { return id == that.id; }
-    bool operator!=(const Kitten& that) const { return id != that.id; }
-   private:
-    static void Sleep() { for (int i = 0; i != 100; ++i) {} }
-  };
+  using Kitten = abc::data::CopyOnly;
   // common data
   std::vector<int> std_vector_of_id{ 1, 2, 3, 4 };
   std::vector<Kitten> std_vector_of_kitten;
@@ -159,7 +147,7 @@ TEST_F(VectorTest, RangeFor) {
     std_vector_of_kitten.emplace_back(i);
   }
   auto iter = std_vector_of_kitten.begin();
-  for (auto x : abc_vector_of_kitten) {
+  for (auto& x : abc_vector_of_kitten) {
     EXPECT_EQ(x, *iter++);
   }
 }

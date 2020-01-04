@@ -6,25 +6,13 @@
 #include <chrono>
 #include <forward_list>
 
+#include "abc/data/copy_only.h"
 #include "gtest/gtest.h"
 
 class ForwardListTest : public ::testing::Test {
  protected:
   // helper class
-  struct Kitten {
-    int id;
-    explicit Kitten(int id) : id(id) { }
-    Kitten() : id(-1) { Sleep(); }
-    ~Kitten() noexcept = default;
-    Kitten(const Kitten&) = default;
-    Kitten& operator=(const Kitten&) = default;
-    Kitten(Kitten&&) noexcept = default;
-    Kitten& operator=(Kitten&&) noexcept = default;
-    bool operator==(const Kitten& that) const { return id == that.id; }
-    bool operator!=(const Kitten& that) const { return id != that.id; }
-   private:
-    static void Sleep() { for (int i = 0; i != 100; ++i) {} }
-  };
+  using Kitten = abc::data::CopyOnly;
   // common data
   std::forward_list<int> std_list_of_id{ 4, 3, 2, 1 };
   std::forward_list<Kitten> std_list_of_kitten;
