@@ -112,7 +112,7 @@ class forward_list {
 
  public:  // iterators and related methods
   class iterator : public abc::iterator<
-      abc::forward_iterator_tag, forward_list::value_type> {
+      std::forward_iterator_tag, forward_list::value_type> {
     friend forward_list;
    protected:
     Node* ptr_node{ nullptr };
@@ -146,12 +146,14 @@ class forward_list {
     pointer operator->() const noexcept { return this->iterator::operator->(); }
   };  // const_iterator
   // range related methods:
-  iterator begin() noexcept { return &(*ptr_head_); }
+  iterator begin() noexcept { return iterator(&(*ptr_head_)); }
   const_iterator begin() const noexcept { return cbegin(); };
-  const_iterator cbegin() const noexcept { return &(*ptr_head_); };
-  iterator end() noexcept { return nullptr; }
+  const_iterator cbegin() const noexcept {
+    return const_iterator(&(*ptr_head_));
+  };
+  iterator end() noexcept { return iterator(nullptr); }
   const_iterator end() const noexcept { return cend(); }
-  const_iterator cend() const noexcept { return nullptr; }
+  const_iterator cend() const noexcept { return const_iterator(nullptr); }
   // construct a new element after an element given by an iterator:
   template <class... Args>
   iterator emplace_after(iterator iter, Args&&... args) {
