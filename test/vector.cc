@@ -13,7 +13,7 @@ class VectorTest : public ::testing::Test {
   struct Kitten {
     int id;
     explicit Kitten(int id) : id(id) {}
-    Kitten() : id(-1) {}
+    Kitten() : id(-1) { Sleep(); }
     ~Kitten() noexcept = default;
     Kitten(const Kitten&) = default;
     Kitten& operator=(const Kitten&) = default;
@@ -21,6 +21,8 @@ class VectorTest : public ::testing::Test {
     Kitten& operator=(Kitten&&) noexcept = default;
     bool operator==(const Kitten& that) const { return id == that.id; }
     bool operator!=(const Kitten& that) const { return id != that.id; }
+   private:
+    static void Sleep() { for (int i = 0; i != 100; ++i) {} }
   };
   // common data
   std::vector<int> std_vector_of_id{ 1, 2, 3, 4 };
@@ -209,19 +211,18 @@ TEST_F(VectorTest, Swap) {
 }
 TEST_F(VectorTest, Performance) {
   using clock = std::chrono::high_resolution_clock;
-  int n = 1000000;
-  auto ticks = [n](auto& vector) {
+  auto ticks = [](auto& vector) {
     auto start = clock::now();
-    for (int i = 0; i != n; ++i) {
+    for (int i = 0; i != 1000000; ++i) {
       vector.emplace_back(i);
     }
     vector.clear();
-    auto duration = clock::now() - start;
+    std::chrono::duration<double> duration = clock::now() - start;
     return duration.count();
   };
   auto t_std = ticks(std_vector_of_kitten);
   auto t_abc = ticks(abc_vector_of_kitten);
-  EXPECT_LT(t_abc, t_std * 0.8);
+  EXPECT_LT(t_abc, t_std);
 }
 
 int main(int argc, char* argv[]) {

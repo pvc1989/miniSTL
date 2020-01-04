@@ -14,6 +14,7 @@ class ForwardListTest : public ::testing::Test {
   struct Kitten {
     int id;
     explicit Kitten(int id) : id(id) { }
+    Kitten() : id(-1) { Sleep(); }
     ~Kitten() noexcept = default;
     Kitten(const Kitten&) = default;
     Kitten& operator=(const Kitten&) = default;
@@ -21,6 +22,8 @@ class ForwardListTest : public ::testing::Test {
     Kitten& operator=(Kitten&&) noexcept = default;
     bool operator==(const Kitten& that) const { return id == that.id; }
     bool operator!=(const Kitten& that) const { return id != that.id; }
+   private:
+    static void Sleep() { for (int i = 0; i != 100; ++i) {} }
   };
   // common data
   std::forward_list<int> std_list_of_id{ 4, 3, 2, 1 };
@@ -148,10 +151,9 @@ TEST_F(ForwardListTest, Move) {
 
 TEST_F(ForwardListTest, Performance) {
   using clock = std::chrono::high_resolution_clock;
-  int n = 1000000;
-  auto ticks = [n](auto& list) {
+  auto ticks = [](auto& list) {
     auto start = clock::now();
-    for (int i = 0; i != n; ++i) {
+    for (int i = 0; i != 1000000; ++i) {
       list.emplace_front(i);
     }
     list.clear();
@@ -160,7 +162,7 @@ TEST_F(ForwardListTest, Performance) {
   };
   auto t_std = ticks(std_list_of_kitten);
   auto t_abc = ticks(abc_list_of_kitten);
-  EXPECT_LT(t_abc/t_std, 1.2);
+  EXPECT_LT(t_abc, t_std);
 }
 
 int main(int argc, char* argv[]) {
