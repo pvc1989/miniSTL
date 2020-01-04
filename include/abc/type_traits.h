@@ -1,9 +1,8 @@
 // Copyright 2019 Weicheng Pei
+#ifndef ABC_TYPE_TRAITS_H_
+#define ABC_TYPE_TRAITS_H_
 
-#ifndef PVC_TYPE_TRAITS_H_
-#define PVC_TYPE_TRAITS_H_
-
-namespace pvc {
+namespace abc {
 
 template <class T> struct remove_reference      { using type = T; };
 template <class T> struct remove_reference<T&>  { using type = T; };
@@ -12,6 +11,6 @@ template <class T> struct remove_reference<T&&> { using type = T; };
 template <class T>
 using remove_reference_t = typename remove_reference<T>::type;
 
-}  // namespace pvc
+}  // namespace abc
 
-#endif  // PVC_TYPE_TRAITS_H_
+#endif  // ABC_TYPE_TRAITS_H_

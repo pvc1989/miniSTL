@@ -1,7 +1,6 @@
 // Copyright 2019 Weicheng Pei
-
-#ifndef PVC_FORWARD_LIST_H_
-#define PVC_FORWARD_LIST_H_
+#ifndef ABC_FORWARD_LIST_H_
+#define ABC_FORWARD_LIST_H_
 
 #include <cstddef>
 #include <memory>
@@ -9,7 +8,7 @@
 #include "iterator.h"
 #include "utility.h"
 
-namespace pvc {
+namespace abc {
 
 template <class T>
 class forward_list {
@@ -68,7 +67,7 @@ class forward_list {
  private:
   struct Node {
    public:  // type member:
-#ifdef PVC_USE_SMART_POINTER_
+#ifdef ABC_USE_SMART_POINTER_
     using Pointer = std::unique_ptr<Node>;
 #else
     using Pointer = Node*;
@@ -91,7 +90,7 @@ class forward_list {
  public:  // operations at the beginning:
   template <class... Args>
   void emplace_front(Args&&... args) {
-#ifdef PVC_USE_SMART_POINTER_
+#ifdef ABC_USE_SMART_POINTER_
     auto ptr_new = std::make_unique<Node>(
       ptr_head_.release()/* raw pointer of the old head */,
       std::forward<Args>(args).../* arguments for value */);
@@ -101,7 +100,7 @@ class forward_list {
 #endif
   }
   void pop_front() noexcept {
-#ifdef PVC_USE_SMART_POINTER_
+#ifdef ABC_USE_SMART_POINTER_
     auto ptr_next = ptr_head_->ptr_next.release();
     ptr_head_.reset(ptr_next);
 #else
@@ -112,7 +111,7 @@ class forward_list {
   }
 
  public:  // iterators and related methods
-  class iterator : public pvc::iterator<
+  class iterator : public abc::iterator<
       std::forward_iterator_tag, forward_list::value_type> {
     friend forward_list;
    protected:
@@ -156,7 +155,7 @@ class forward_list {
   // construct a new element after an element given by an iterator:
   template <class... Args> 
   iterator emplace_after(iterator iter, Args&&... args) {
-#ifdef PVC_USE_SMART_POINTER_
+#ifdef ABC_USE_SMART_POINTER_
     auto& ptr_next = iter.ptr_node->ptr_next;
     auto ptr_new = std::make_unique<Node>(
       ptr_next.release()/* raw pointer of the old head */,
@@ -189,6 +188,6 @@ bool operator!=(const forward_list<T>& lhs,
   return !(lhs == rhs);                 
 }
 
-}  // namespace pvc
+}  // namespace abc
 
-#endif  // PVC_FORWARD_LIST_H_
+#endif  // ABC_FORWARD_LIST_H_

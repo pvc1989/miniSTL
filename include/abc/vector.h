@@ -1,7 +1,6 @@
 // Copyright 2019 Weicheng Pei
-
-#ifndef PVC_VECTOR_H_
-#define PVC_VECTOR_H_
+#ifndef ABC_VECTOR_H_
+#define ABC_VECTOR_H_
 
 #include <algorithm>
 #include <cassert>
@@ -12,7 +11,7 @@
 #include "iterator.h"
 #include "utility.h"
 
-namespace pvc {
+namespace abc {
 
 template <class T>
 class vector {
@@ -233,6 +232,6 @@ bool operator!=(const vector<T>& lhs,
   return !(lhs == rhs);                 
 }
 
-}  // namespace pvc
+}  // namespace abc
 
-#endif  // PVC_vector_H_
+#endif  // ABC_VECTOR_H_

@@ -1,11 +1,10 @@
 // Copyright 2019 Weicheng Pei
-
-#ifndef PVC_ITERATOR_H_
-#define PVC_ITERATOR_H_
+#ifndef ABC_ITERATOR_H_
+#define ABC_ITERATOR_H_
 
 #include <cstddef>
 
-namespace pvc {
+namespace abc {
 
 template <class Category, 
           class T, 
@@ -20,6 +19,6 @@ template <class Category,
   using reference = Reference;
 };
 
-}  // namespace pvc
+}  // namespace abc
 
-#endif  // PVC_ITERATOR_H_
+#endif  // ABC_ITERATOR_H_
