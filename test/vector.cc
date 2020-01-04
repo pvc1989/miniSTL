@@ -5,13 +5,13 @@
 #include <chrono>
 #include <vector>
 
-#include "abc/data/copy_only.h"
+#include "abc/data/copyable.h"
 #include "gtest/gtest.h"
 
 class VectorTest : public ::testing::Test {
  protected:
   // helper class
-  using Kitten = abc::data::CopyOnly;
+  using Kitten = abc::data::Copyable;
   // common data
   std::vector<int> std_vector_of_id{ 1, 2, 3, 4 };
   std::vector<Kitten> std_vector_of_kitten;
