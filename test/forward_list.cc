@@ -6,13 +6,13 @@
 #include <chrono>
 #include <forward_list>
 
-#include "abc/data/copy_only.h"
+#include "abc/data/copyable.h"
 #include "gtest/gtest.h"
 
 class ForwardListTest : public ::testing::Test {
  protected:
   // helper class
-  using Kitten = abc::data::CopyOnly;
+  using Kitten = abc::data::Copyable;
   // common data
   std::forward_list<int> std_list_of_id{ 4, 3, 2, 1 };
   std::forward_list<Kitten> std_list_of_kitten;
