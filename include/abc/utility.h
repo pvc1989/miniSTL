@@ -2,7 +2,7 @@
 #ifndef ABC_UTILITY_H_
 #define ABC_UTILITY_H_
 
-#include "type_traits.h"
+#include "abc/type_traits.h"
 
 namespace abc {
 

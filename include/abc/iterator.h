@@ -6,15 +6,15 @@
 
 namespace abc {
 
-template <class Category, 
-          class T, 
-          class Distance = std::ptrdiff_t, 
-          class Pointer = T*, 
-          class Reference = T& 
+template <class Category,
+          class T,
+          class Distance = std::ptrdiff_t,
+          class Pointer = T*,
+          class Reference = T&
 > struct iterator {
   using iterator_category = Category;
   using value_type = T;
-  using difference_type = Distance; 
+  using difference_type = Distance;
   using pointer = Pointer;
   using reference = Reference;
 };

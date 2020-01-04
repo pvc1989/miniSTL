@@ -7,9 +7,10 @@
 #include <cstddef>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
-#include "iterator.h"
-#include "utility.h"
+#include "abc/iterator.h"
+#include "abc/utility.h"
 
 namespace abc {
 
@@ -102,7 +103,7 @@ class vector {
 
   const_iterator begin() const noexcept { return cbegin(); };
   const_iterator end() const noexcept { return cend(); }
- 
+
   // non-modifying methods
   bool empty() const noexcept {
     return size_ == 0;
@@ -124,7 +125,7 @@ class vector {
     }
     return array_[pos];
   }
-  const T& at(size_type pos) const{
+  const T& at(size_type pos) const {
     if (pos >= size_) {
       std::out_of_range("Out of range!");
     }
@@ -177,7 +178,7 @@ class vector {
   }
   void pop_back() noexcept {
     size_--;
-    if (size_ > 0 and size_ <= capacity_/4) {
+    if (size_ > 0 && size_ <= capacity_/4) {
       shrink();
     }
   }
@@ -214,24 +215,26 @@ class vector {
   }
 };
 
+}  // namespace abc
+
 template <class T>
-bool operator==(const vector<T>& lhs,
-                const vector<T>& rhs) noexcept {
+bool operator==(const abc::vector<T>& lhs,
+                const abc::vector<T>& rhs) noexcept {
   auto iter = lhs.begin();
   const auto iend = lhs.end();
   for (const auto& x : rhs) {
-    if (iter == iend || *iter != x) { return false; }
-    else { ++iter; }
+    if (iter == iend || *iter != x) {
+      return false;
+    } else {
+      ++iter;
+    }
   }
-  if (iter == iend) { return true; }
-  else { return false; }  
+  return iter == iend;
 }
 template <class T>
-bool operator!=(const vector<T>& lhs,
-                const vector<T>& rhs) noexcept {
-  return !(lhs == rhs);                 
+bool operator!=(const abc::vector<T>& lhs,
+                const abc::vector<T>& rhs) noexcept {
+  return !(lhs == rhs);
 }
-
-}  // namespace abc
 
 #endif  // ABC_VECTOR_H_

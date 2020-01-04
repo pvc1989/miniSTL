@@ -5,8 +5,8 @@
 #include <cstddef>
 #include <memory>
 
-#include "iterator.h"
-#include "utility.h"
+#include "abc/iterator.h"
+#include "abc/utility.h"
 
 namespace abc {
 
@@ -45,7 +45,7 @@ class forward_list {
     return *this;
   }
   // move operations:
-  forward_list(forward_list&& that) { *this = std::move(that); }
+  forward_list(forward_list&& that) { *this = abc::move(that); }
   forward_list& operator=(forward_list&& that) {
     if (this != &that) {
       clear();
@@ -59,7 +59,7 @@ class forward_list {
   const_reference front() const { return ptr_head_->value; }
   // mutators:
   void clear() noexcept {
-    while(!empty()) {
+    while (!empty()) {
       pop_front();
     }
   }
@@ -77,10 +77,10 @@ class forward_list {
     Pointer ptr_next;
    public:  // constuctors:
     template <class... Args>
-    explicit Node(Args&&... args) : value(std::forward<Args>(args)...) { }
+    explicit Node(Args&&... args) : value(abc::forward<Args>(args)...) { }
     template <class... Args>
     explicit Node(Node* ptr_node, Args&&... args)
-      : ptr_next(ptr_node), value(std::forward<Args>(args)...) { }
+      : ptr_next(ptr_node), value(abc::forward<Args>(args)...) { }
   };
 
  private:
@@ -93,10 +93,10 @@ class forward_list {
 #ifdef ABC_USE_SMART_POINTER_
     auto ptr_new = std::make_unique<Node>(
       ptr_head_.release()/* raw pointer of the old head */,
-      std::forward<Args>(args).../* arguments for value */);
+      abc::forward<Args>(args).../* arguments for value */);
     ptr_new.swap(ptr_head_);
 #else
-    ptr_head_ = new Node(ptr_head_, std::forward<Args>(args)...);
+    ptr_head_ = new Node(ptr_head_, abc::forward<Args>(args)...);
 #endif
   }
   void pop_front() noexcept {
@@ -112,12 +112,12 @@ class forward_list {
 
  public:  // iterators and related methods
   class iterator : public abc::iterator<
-      std::forward_iterator_tag, forward_list::value_type> {
+      abc::forward_iterator_tag, forward_list::value_type> {
     friend forward_list;
    protected:
     Node* ptr_node{ nullptr };
    public:
-    iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
+    explicit iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
     reference operator*() const noexcept { return ptr_node->value; }
     pointer operator->() const noexcept { return &this->operator*(); }
     bool operator==(iterator const& rhs) const noexcept {
@@ -141,7 +141,7 @@ class forward_list {
    public:
     using reference = typename forward_list::const_reference;
     using pointer = typename forward_list::const_pointer;
-    const_iterator(Node* ptr_node) noexcept : iterator(ptr_node) { }
+    explicit const_iterator(Node* ptr_node) noexcept : iterator(ptr_node) { }
     reference operator*() const noexcept { return this->iterator::operator*(); }
     pointer operator->() const noexcept { return this->iterator::operator->(); }
   };  // const_iterator
@@ -153,17 +153,17 @@ class forward_list {
   const_iterator end() const noexcept { return cend(); }
   const_iterator cend() const noexcept { return nullptr; }
   // construct a new element after an element given by an iterator:
-  template <class... Args> 
+  template <class... Args>
   iterator emplace_after(iterator iter, Args&&... args) {
 #ifdef ABC_USE_SMART_POINTER_
     auto& ptr_next = iter.ptr_node->ptr_next;
     auto ptr_new = std::make_unique<Node>(
       ptr_next.release()/* raw pointer of the old head */,
-      std::forward<Args>(args).../* arguments for value */);
+      abc::forward<Args>(args).../* arguments for value */);
     ptr_next.reset(ptr_new.release());
 #else
     auto& ptr_next = iter.ptr_node->ptr_next;
-    auto ptr_new = new Node(ptr_next, std::forward<Args>(args)...);
+    auto ptr_new = new Node(ptr_next, abc::forward<Args>(args)...);
     ptr_next = ptr_new;
 #endif
     return ++iter;
@@ -176,16 +176,18 @@ bool operator==(const forward_list<T>& lhs,
   auto iter = lhs.begin();
   const auto iend = lhs.end();
   for (const auto& x : rhs) {
-    if (iter == iend || *iter != x) { return false; }
-    else { ++iter; }
+    if (iter == iend || *iter != x) {
+      return false;
+    } else {
+      ++iter;
+    }
   }
-  if (iter == iend) { return true; }
-  else { return false; }  
+  return iter == iend;
 }
 template <class T>
 bool operator!=(const forward_list<T>& lhs,
                 const forward_list<T>& rhs) noexcept {
-  return !(lhs == rhs);                 
+  return !(lhs == rhs);
 }
 
 }  // namespace abc
