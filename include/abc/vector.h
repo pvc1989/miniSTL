@@ -1,18 +1,18 @@
-// Copyright 2019 Weicheng Pei
-
-#ifndef PVC_VECTOR_H_
-#define PVC_VECTOR_H_
+// Copyright 2019 Minghao Yang and Weicheng Pei
+#ifndef ABC_VECTOR_H_
+#define ABC_VECTOR_H_
 
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
-#include "iterator.h"
-#include "utility.h"
+#include "abc/iterator.h"
+#include "abc/utility.h"
 
-namespace pvc {
+namespace abc {
 
 template <class T>
 class vector {
@@ -103,7 +103,7 @@ class vector {
 
   const_iterator begin() const noexcept { return cbegin(); };
   const_iterator end() const noexcept { return cend(); }
- 
+
   // non-modifying methods
   bool empty() const noexcept {
     return size_ == 0;
@@ -111,8 +111,8 @@ class vector {
   }
   reference front() { return array_[0]; }
   reference back() { return array_[size_ - 1]; }
-  size_type size() { return size_; }
-  size_type capacity() { return capacity_; }
+  size_type size() const { return size_; }
+  size_type capacity() const { return capacity_; }
   T& operator[] (size_type pos) {
     return array_[pos];
   }
@@ -125,7 +125,7 @@ class vector {
     }
     return array_[pos];
   }
-  const T& at(size_type pos) const{
+  const T& at(size_type pos) const {
     if (pos >= size_) {
       std::out_of_range("Out of range!");
     }
@@ -178,7 +178,7 @@ class vector {
   }
   void pop_back() noexcept {
     size_--;
-    if (size_ > 0 and size_ <= capacity_/4) {
+    if (size_ > 0 && size_ <= capacity_/4) {
       shrink();
     }
   }
@@ -215,24 +215,26 @@ class vector {
   }
 };
 
+}  // namespace abc
+
 template <class T>
-bool operator==(const vector<T>& lhs,
-                const vector<T>& rhs) noexcept {
+bool operator==(const abc::vector<T>& lhs,
+                const abc::vector<T>& rhs) noexcept {
   auto iter = lhs.begin();
   const auto iend = lhs.end();
   for (const auto& x : rhs) {
-    if (iter == iend || *iter != x) { return false; }
-    else { ++iter; }
+    if (iter == iend || *iter != x) {
+      return false;
+    } else {
+      ++iter;
+    }
   }
-  if (iter == iend) { return true; }
-  else { return false; }  
+  return iter == iend;
 }
 template <class T>
-bool operator!=(const vector<T>& lhs,
-                const vector<T>& rhs) noexcept {
-  return not (lhs == rhs);                 
+bool operator!=(const abc::vector<T>& lhs,
+                const abc::vector<T>& rhs) noexcept {
+  return !(lhs == rhs);
 }
 
-}  // namespace pvc
-
-#endif  // PVC_vector_H_
+#endif  // ABC_VECTOR_H_
