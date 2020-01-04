@@ -2,6 +2,7 @@
 #include "abc/vector.h"
 
 #include <algorithm>
+#include <chrono>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -205,6 +206,22 @@ TEST_F(VectorTest, Swap) {
   EXPECT_EQ(b.size(), size_a);
   EXPECT_EQ(b.capacity(), size_a);
   EXPECT_EQ(b.back(), end_of_a);
+}
+TEST_F(VectorTest, Performance) {
+  using clock = std::chrono::high_resolution_clock;
+  int n = 1000000;
+  auto ticks = [n](auto& vector) {
+    auto start = clock::now();
+    for (int i = 0; i != n; ++i) {
+      vector.emplace_back(i);
+    }
+    vector.clear();
+    auto duration = clock::now() - start;
+    return duration.count();
+  };
+  auto t_std = ticks(std_vector_of_kitten);
+  auto t_abc = ticks(abc_vector_of_kitten);
+  EXPECT_LT(t_abc, t_std * 0.8);
 }
 
 int main(int argc, char* argv[]) {
