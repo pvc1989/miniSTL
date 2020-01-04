@@ -20,6 +20,6 @@ cmake --build .
 We use [`cpplint.py`](./cpplint.py) to detect style errors:
 ```shell
 cd miniSTL
-python cpplint.py include/*.h test/*.cc
+python cpplint.py include/abc/*.h test/*.cc
 ```
 Read [***Google C++ Style Guide***](https://google.github.io/styleguide/cppguide.html) for more details.
