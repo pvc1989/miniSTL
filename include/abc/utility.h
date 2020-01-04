@@ -12,9 +12,9 @@ remove_reference_t<T>&& move(T&& t) {
 }
 
 template <class T>
-T&& forward(remove_reference_t<T>&  t) { return static_cast<T&&>(t); }
+T&& forward(remove_reference_t<T>&  t) { return static_cast<T&&>(t); } // NOLINT
 template <class T>
-T&& forward(remove_reference_t<T>&& t) { return static_cast<T&&>(t); }
+T&& forward(remove_reference_t<T>&& t) { return static_cast<T&&>(t); } // NOLINT
 
 }  // namespace abc
 

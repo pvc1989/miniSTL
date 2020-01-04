@@ -2,7 +2,7 @@
 #include "abc/vector.h"
 
 #include <algorithm>
-#include <chrono>
+#include <chrono>  // NOLINT
 #include <vector>
 
 #include "abc/data/copyable.h"
