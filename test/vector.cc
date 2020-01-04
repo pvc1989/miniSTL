@@ -136,7 +136,7 @@ TEST_F(VectorTest, BeginAndEnd) {
   auto iter_std = std_vector_of_kitten.begin();
   while (iter_abc != abc_vector_of_kitten.end()) {
     EXPECT_EQ(*iter_abc, *iter_std);
-    EXPECT_EQ(iter_abc->id, iter_std->id);
+    EXPECT_EQ(iter_abc->Id(), iter_std->Id());
     ++iter_abc;
     ++iter_std;
   }

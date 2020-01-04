@@ -11,11 +11,15 @@ namespace abc {
 namespace data {
 
 class MoveOnly : public DefaultConstructableButSlow {
+ private:
+  std::unique_ptr<int> id_;  // move-only data member
+
  public:
-  std::unique_ptr<int> id;  // move-only data member
+  // Accessor:
+  int Id() const { return id_ ? *id_ : -1; }
   // Constructors:
   MoveOnly() : DefaultConstructableButSlow() {}
-  MoveOnly(int i) : id(std::make_unique<int>(i)) {}
+  explicit MoveOnly(int i) : id_(std::make_unique<int>(i)) {}
   // Destructor:
   ~MoveOnly() noexcept = default;
   // Move operations:
@@ -25,8 +29,8 @@ class MoveOnly : public DefaultConstructableButSlow {
   MoveOnly(MoveOnly const& other) = delete;
   MoveOnly& operator=(MoveOnly const& other) = delete;
   // Comparing operations:
-  bool operator==(const MoveOnly& that) const { return *id == *that.id; }
-  bool operator!=(const MoveOnly& that) const { return *id != *that.id; }
+  bool operator==(const MoveOnly& that) const { return Id() == that.Id(); }
+  bool operator!=(const MoveOnly& that) const { return !operator==(that); }
 };  // class MoveOnly
 
 }  // namespace data
