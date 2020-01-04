@@ -1,3 +1,5 @@
+// Copyright 2020 Weicheng Pei
+
 #ifndef ABC_DATA_MOVE_ONLY_H_
 #define ABC_DATA_MOVE_ONLY_H_
 
