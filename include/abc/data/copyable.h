@@ -1,3 +1,5 @@
+// Copyright 2020 Weicheng Pei
+
 #ifndef ABC_DATA_COPYABLE_H_
 #define ABC_DATA_COPYABLE_H_
 
@@ -9,11 +11,15 @@ namespace abc {
 namespace data {
 
 class Copyable : public DefaultConstructableButSlow {
+ private:
+  std::shared_ptr<int> id_;  // copy-able data member
+
  public:
-  std::shared_ptr<int> id;  // copy-able data member
+  // Accessor:
+  int Id() const { return id_ ? *id_ : -1; }
   // Constructors:
   Copyable() : DefaultConstructableButSlow() {}
-  Copyable(int i) : id(std::make_shared<int>(i)) {}
+  explicit Copyable(int i) : id_(std::make_shared<int>(i)) {}
   // Destructor:
   ~Copyable() noexcept = default;
   // Copy operations:
@@ -21,8 +27,8 @@ class Copyable : public DefaultConstructableButSlow {
   Copyable& operator=(Copyable const& other) = default;
   // The implicit move operations are suppressed by the declarations above.
   // Comparing operations:
-  bool operator==(const Copyable& that) const { return *id == *that.id; }
-  bool operator!=(const Copyable& that) const { return *id != *that.id; }
+  bool operator==(const Copyable& that) const { return Id() == that.Id(); }
+  bool operator!=(const Copyable& that) const { return !operator==(that); }
 };  // class Copyable
 
 }  // namespace data

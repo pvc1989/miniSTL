@@ -26,11 +26,10 @@ class vector {
  public:
   // construction
   vector() : capacity_(0), size_(0), array_(new T[0]) {}
-  explicit vector(size_type count) : capacity_(count), size_(count),
-                                     array_(new T[count]) {}
-  explicit vector(size_type count, const T& value) : capacity_(count),
-                                                     size_(count),
-                                                     array_(new T[count]) {
+  explicit vector(size_type count)
+      : capacity_(count), size_(count), array_(new T[count]) {}
+  vector(size_type count, const T& value)
+      : capacity_(count), size_(count), array_(new T[count]) {
     for (int i = 0; i < size_; i++) {
       array_[i] = value;
     }

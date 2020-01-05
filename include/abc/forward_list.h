@@ -165,7 +165,7 @@ class forward_list {
     ptr_next.reset(ptr_new.release());
 #else
     auto& ptr_next = iter.ptr_node->ptr_next;
-    auto ptr_new = new Node(ptr_next, abc::forward<Args>(args)...);
+    auto ptr_new = new Node(ptr_next, abc::forward<Args>(args)...);  // NOLINT
     ptr_next = ptr_new;
 #endif
     return ++iter;
