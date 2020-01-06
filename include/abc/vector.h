@@ -90,12 +90,12 @@ class vector {
   using iterator = pointer;
 
   iterator begin() noexcept { return array_; };
-  iterator end() noexcept { return array_+size_; }
+  iterator end() noexcept { return array_ + size_; }
 
   using const_iterator = const_pointer;
 
   const_iterator cbegin() const noexcept { return array_; };
-  const_iterator cend() const noexcept { return array_+size_; }
+  const_iterator cend() const noexcept { return array_ + size_; }
 
   const_iterator begin() const noexcept { return cbegin(); };
   const_iterator end() const noexcept { return cend(); }
@@ -139,7 +139,7 @@ class vector {
       std::swap(new_array_, array_);
       allocator_.deallocate(new_array_, old_capacity);
     } else if (count > size_) {
-      std::uninitialized_fill_n(array_+size_, count-size_, value);
+      std::uninitialized_fill_n(end(), count - size_, value);
     }
     size_ = count;
   }
@@ -149,21 +149,21 @@ class vector {
       enlarge();
     }
     assert(size() < capacity());
-    allocator_.construct(&array_[size_++], std::forward<Args>(args)...);
+    allocator_.construct(array_ + size_++, std::forward<Args>(args)...);
   }
   void push_back(const T& value) {
     if (size() == capacity()) {
       enlarge();
     }
     assert(size() < capacity());
-    allocator_.construct(&array_[size_++], value);
+    allocator_.construct(array_ + size_++, value);
   }
   void push_back(T&& value) {
     if (size() == capacity()) {
       enlarge();
     }
     assert(size() < capacity());
-    allocator_.construct(&array_[size_++], std::move(value));
+    allocator_.construct(array_ + size_++, std::move(value));
   }
   void pop_back() noexcept {
     size_--;
