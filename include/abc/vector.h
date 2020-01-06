@@ -25,7 +25,7 @@ class vector {
 
  public:
   // construction
-  vector() : capacity_(0), size_(0), array_(allocator_.allocate(0)) {}
+  vector() = default;
   explicit vector(size_type count, const T& value = T())
       : capacity_(count), size_(count), array_(allocator_.allocate(count)) {
     std::uninitialized_fill_n(array_, size_, value);
@@ -78,10 +78,11 @@ class vector {
     return *this;
   }
 
- private:
-  size_type capacity_;
-  size_type size_;
-  T* array_;
+ private:  // Data members:
+  // Don't change the order of these members!
+  size_type capacity_{0};
+  size_type size_{0};
+  T* array_{allocator_.allocate(0)};
   static Allocator allocator_;
 
  public:
