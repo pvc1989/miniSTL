@@ -20,11 +20,9 @@ class ForwardListTest : public ::testing::Test {
   std::forward_list<Kitten> std_list_of_kitten;
   abc::forward_list<Kitten> abc_list_of_kitten;
 };
-
 TEST_F(ForwardListTest, Empty) {
   EXPECT_EQ(abc_list_of_kitten.empty(), std_list_of_kitten.empty());
 }
-
 TEST_F(ForwardListTest, EmplaceFront) {
   for (const auto& i : std_list_of_id) {
     std_list_of_kitten.emplace_front(i);
@@ -32,7 +30,6 @@ TEST_F(ForwardListTest, EmplaceFront) {
   }
   EXPECT_EQ(abc_list_of_kitten.empty(), std_list_of_kitten.empty());
 }
-
 TEST_F(ForwardListTest, Front) {
   for (const auto& i : std_list_of_id) {
     std_list_of_kitten.emplace_front(i);
@@ -40,7 +37,6 @@ TEST_F(ForwardListTest, Front) {
     EXPECT_EQ(abc_list_of_kitten.front(), std_list_of_kitten.front());
   }
 }
-
 TEST_F(ForwardListTest, PopFront) {
   for (const auto& i : std_list_of_id) {
     std_list_of_kitten.emplace_front(i);
@@ -52,13 +48,24 @@ TEST_F(ForwardListTest, PopFront) {
     EXPECT_EQ(abc_list_of_kitten.empty(), std_list_of_kitten.empty());
   }
 }
-
 TEST_F(ForwardListTest, Iterator) {
   for (const auto& i : std_list_of_id) {
     abc_list_of_kitten.emplace_front(i);
+    std_list_of_kitten.emplace_front(i);
   }
+  // construct
+  auto iter = abc_list_of_kitten.begin();
+  EXPECT_EQ(*iter, *std_list_of_kitten.begin());
+  // copy
+  auto iter_copy = iter;
+  EXPECT_EQ(iter, iter_copy);
+  EXPECT_EQ(*iter, *iter_copy);
+  // move
+  auto iter_move = std::move(iter_copy);
+  EXPECT_EQ(iter, iter_move);
+  EXPECT_EQ(*iter, *iter_move);
   // look for an object in the list
-  auto iter = std::find(
+  iter = std::find(
       abc_list_of_kitten.begin(),
       abc_list_of_kitten.end(),
       Kitten(2));
@@ -71,7 +78,16 @@ TEST_F(ForwardListTest, Iterator) {
       Kitten(-2));
   EXPECT_EQ(iter, abc_list_of_kitten.end());
 }
-
+TEST_F(ForwardListTest, RangeFor) {
+  for (const auto& i : std_list_of_id) {
+    abc_list_of_kitten.emplace_front(i);
+    std_list_of_kitten.emplace_front(i);
+  }
+  auto iter = std_list_of_kitten.begin();
+  for (auto& x : abc_list_of_kitten) {
+    EXPECT_EQ(x, *iter++);
+  }
+}
 TEST_F(ForwardListTest, EmplaceAfter) {
   for (const auto& i : std_list_of_id) {
     std_list_of_kitten.emplace_front(i);
@@ -95,7 +111,6 @@ TEST_F(ForwardListTest, EmplaceAfter) {
     std_list_of_kitten.pop_front();
   }
 }
-
 TEST_F(ForwardListTest, Equal) {
   auto new_list_of_kitten = decltype(abc_list_of_kitten)();
   for (const auto& i : std_list_of_id) {
@@ -107,7 +122,6 @@ TEST_F(ForwardListTest, Equal) {
   EXPECT_FALSE(abc_list_of_kitten != abc_list_of_kitten);
   EXPECT_FALSE(new_list_of_kitten != abc_list_of_kitten);
 }
-
 TEST_F(ForwardListTest, Copy) {
   for (const auto& i : std_list_of_id) {
     abc_list_of_kitten.emplace_front(i);
@@ -122,7 +136,6 @@ TEST_F(ForwardListTest, Copy) {
   new_list_of_kitten = new_list_of_kitten;
   EXPECT_EQ(new_list_of_kitten, abc_list_of_kitten);
 }
-
 TEST_F(ForwardListTest, Move) {
   for (const auto& i : std_list_of_id) {
     abc_list_of_kitten.emplace_front(i);
@@ -138,7 +151,6 @@ TEST_F(ForwardListTest, Move) {
   moved_list_of_kitten = abc::move(moved_list_of_kitten);
   EXPECT_EQ(moved_list_of_kitten, abc_list_of_kitten);
 }
-
 TEST_F(ForwardListTest, Performance) {
   using clock = std::chrono::high_resolution_clock;
   auto ticks = [](auto& list) {
