@@ -165,7 +165,7 @@ class vector {
     assert(size() < capacity());
     allocator_.construct(array_ + size_++, std::move(value));
   }
-  void pop_back() noexcept {
+  void pop_back() {
     size_--;
     if (size_ > 0 && size_ <= capacity_/4) {
       shrink();
@@ -177,7 +177,7 @@ class vector {
     }
     size_ = 0;
   }
-  void swap(vector& other) {
+  void swap(vector& other) noexcept {
     std::swap(size_, other.size_);
     std::swap(capacity_, other.capacity_);
     std::swap(array_, other.array_);
