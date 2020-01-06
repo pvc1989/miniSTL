@@ -185,24 +185,26 @@ class vector {
 
  private:
   void enlarge() {
-    auto old_capacity = capacity_;
+    auto new_capacity = capacity_;
     if (size_ == 0) {
-      capacity_ = 1;
+      new_capacity = 1;
     } else {
-      capacity_ = size_ * 2;
+      new_capacity = size_ * 2;
     }
-    auto new_array_ = allocator_.allocate(capacity_);
-    std::uninitialized_move(array_, array_+size_, new_array_);
-    std::swap(array_, new_array_);
-    allocator_.deallocate(new_array_, old_capacity);
+    auto new_array = allocator_.allocate(new_capacity);
+    std::uninitialized_move(begin(), end(), new_array);
+    allocator_.deallocate(array_, capacity_);
+    array_ = new_array;
+    capacity_ = new_capacity;
   }
   void shrink() {
-    auto old_capacity = capacity_;
-    capacity_ /= 2;
-    auto new_array_ = allocator_.allocate(capacity_);
-    std::uninitialized_move(array_, array_+size_, new_array_);
-    std::swap(array_, new_array_);
-    allocator_.deallocate(new_array_, old_capacity);
+    auto new_capacity = capacity_;
+    new_capacity /= 2;
+    auto new_array = allocator_.allocate(new_capacity);
+    std::uninitialized_move(begin(), end(), new_array);
+    allocator_.deallocate(array_, capacity_);
+    array_ = new_array;
+    capacity_ = new_capacity;
   }
 };
 template <class T, class Allocator>
