@@ -14,7 +14,7 @@
 
 namespace abc {
 
-template <class T>
+template <class T, class Allocator = std::allocator<T>>
 class vector {
  public:
   using size_type = std::size_t;
@@ -25,49 +25,44 @@ class vector {
 
  public:
   // construction
-  vector() : capacity_(0), size_(0), array_(new T[0]) {}
-  explicit vector(size_type count)
-      : capacity_(count), size_(count), array_(new T[count]) {}
-  vector(size_type count, const T& value)
-      : capacity_(count), size_(count), array_(new T[count]) {
-    for (int i = 0; i < size_; i++) {
-      array_[i] = value;
-    }
+  vector() : capacity_(0), size_(0), array_(allocator_.allocate(0)) {}
+  explicit vector(size_type count, const T& value = T())
+      : capacity_(count), size_(count), array_(allocator_.allocate(count)) {
+    std::uninitialized_fill_n(array_, size_, value);
   }
   vector(std::initializer_list<T> init) {
     capacity_ = init.end() - init.begin();
     size_ = capacity_;
-    array_ = std::make_unique<T[]>(size_);
-    auto iter = init.begin();
-    for (int i = 0; i < size_; i++) {
-      array_[i] = *iter;
-      iter++;
-    }
+    array_ = allocator_.allocate(size_);
+    std::uninitialized_copy(init.begin(), init.end(), array_);
   }
   vector& operator=(std::initializer_list<T> init) {
+    clear();
     size_ = init.end() - init.begin();
-    capacity_ = std::max(size_, capacity_);
-    array_ = std::make_unique<T[]>(size_);
-    auto iter = init.begin();
-    for (int i = 0; i < size_; i++) {
-      array_[i] = *iter;
-      iter++;
+    if (size_ > capacity_) {
+      allocator_.deallocate(array_, capacity_);
+      capacity_ = size_;
+      array_ = allocator_.allocate(capacity_);
     }
+    std::uninitialized_copy(init.begin(), init.end(), array_);
     return *this;
   }
   // destruction
-  ~vector() noexcept { clear(); }
+  ~vector() noexcept {
+    clear();
+    allocator_.deallocate(array_, capacity_);
+  }
   // copy operations:
   vector(const vector& that) { *this = that; }
   vector& operator=(const vector& that) {
     if (this != &that) {
       clear();
-      capacity_ = that.capacity();
-      size_ = that.size();
-      array_ = std::make_unique<T[]>(size_);
-      for (int i = 0; i < size_; i++) {
-        array_[i] = that[i];
+      if (capacity_ != that.capacity()) {
+        allocator_.deallocate(array_, capacity_);
+        capacity_ = that.capacity();
       }
+      size_ = that.size();
+      std::uninitialized_copy(that.begin(), that.end(), array_);
     }
     return *this;
   }
@@ -75,10 +70,10 @@ class vector {
   vector(vector&& that) { *this = std::move(that); }
   vector& operator=(vector&& that) {
     if (this != &that) {
-      clear();
       capacity_ = that.capacity();
       size_ = that.size();
-      array_.swap(that.array_);
+      array_ = allocator_.allocate(capacity_);
+      std::uninitialized_move(that.begin(), that.end(), array_);
     }
     return *this;
   }
@@ -86,19 +81,20 @@ class vector {
  private:
   size_type capacity_;
   size_type size_;
-  std::unique_ptr<T[]> array_;
+  T* array_;
+  static Allocator allocator_;
 
  public:
   // iterator and related methods
   using iterator = pointer;
 
-  iterator begin() noexcept { return array_.get(); };
-  iterator end() noexcept { return array_.get()+size_; }
+  iterator begin() noexcept { return array_; };
+  iterator end() noexcept { return array_+size_; }
 
   using const_iterator = const_pointer;
 
-  const_iterator cbegin() const noexcept { return array_.get(); };
-  const_iterator cend() const noexcept { return array_.get()+size_; }
+  const_iterator cbegin() const noexcept { return array_; };
+  const_iterator cend() const noexcept { return array_+size_; }
 
   const_iterator begin() const noexcept { return cbegin(); };
   const_iterator end() const noexcept { return cend(); }
@@ -132,26 +128,19 @@ class vector {
   }
 
   // modifying methods
-  void resize(size_type count, const T& value) {
+  void resize(size_type count, const T& value = T()) {
     if (count > capacity_) {
+      auto old_capacity = capacity_;
       while (capacity_ < count) { capacity_ *= 2; }
-      auto new_array_ = std::make_unique<T[]>(capacity_);
-      for (int i = size_; i < count; i++) {
-        new_array_[i] = value;
-      }
-      for (int i = 0; i < size_; i++) {
-        std::swap(new_array_[i], array_[i]);
-      }
-      array_.swap(new_array_);
+      auto new_array_ = allocator_.allocate(capacity_);
+      std::uninitialized_move(array_, array_+size_, new_array_);
+      std::uninitialized_fill_n(new_array_+size_, count-size_, value);
+      std::swap(new_array_, array_);
+      allocator_.deallocate(new_array_, old_capacity);
     } else if (count > size_) {
-      for (int i = size_; i < count; i++) {
-        array_[i] = value;
-      }
+      std::uninitialized_fill_n(array_+size_, count-size_, value);
     }
     size_ = count;
-  }
-  void resize(size_type count) {
-    resize(count, T());
   }
   template <class... Args>
   void emplace_back(Args&&... args) {
@@ -159,21 +148,21 @@ class vector {
       enlarge();
     }
     assert(size() < capacity());
-    array_[size_++] = T(std::forward<Args>(args)...);
+    allocator_.construct(&array_[size_++], std::forward<Args>(args)...);
   }
   void push_back(const T& value) {
     if (size() == capacity()) {
       enlarge();
     }
     assert(size() < capacity());
-    array_[size_++] = value;
+    allocator_.construct(&array_[size_++], value);
   }
   void push_back(T&& value) {
     if (size() == capacity()) {
       enlarge();
     }
     assert(size() < capacity());
-    array_[size_++] = std::move(value);
+    allocator_.construct(&array_[size_++], std::move(value));
   }
   void pop_back() noexcept {
     size_--;
@@ -182,43 +171,47 @@ class vector {
     }
   }
   void clear() noexcept {
+    for (int i = 0; i < size_; i++) {
+      allocator_.destroy(array_ + i);
+    }
     size_ = 0;
-    array_.reset(new T[0]);
   }
   void swap(vector& other) {
     std::swap(size_, other.size_);
     std::swap(capacity_, other.capacity_);
-    array_.swap(other.array_);
+    std::swap(array_, other.array_);
   }
 
  private:
   void enlarge() {
+    auto old_capacity = capacity_;
     if (size_ == 0) {
       capacity_ = 1;
     } else {
       capacity_ = size_ * 2;
     }
-    auto new_array_ = std::make_unique<T[]>(capacity_);
-    for (int i = 0; i < size_; i++) {
-      std::swap(new_array_[i], array_[i]);
-    }
-    array_.swap(new_array_);
+    auto new_array_ = allocator_.allocate(capacity_);
+    std::uninitialized_move(array_, array_+size_, new_array_);
+    std::swap(array_, new_array_);
+    allocator_.deallocate(new_array_, old_capacity);
   }
   void shrink() {
+    auto old_capacity = capacity_;
     capacity_ /= 2;
-    auto new_array_ = std::make_unique<T[]>(capacity_);
-    for (int i = 0; i < size_; i++) {
-      std::swap(new_array_[i], array_[i]);
-    }
-    array_.swap(new_array_);
+    auto new_array_ = allocator_.allocate(capacity_);
+    std::uninitialized_move(array_, array_+size_, new_array_);
+    std::swap(array_, new_array_);
+    allocator_.deallocate(new_array_, old_capacity);
   }
 };
+template <class T, class Allocator>
+Allocator vector<T, Allocator>::allocator_;
 
 }  // namespace abc
 
-template <class T>
-bool operator==(const abc::vector<T>& lhs,
-                const abc::vector<T>& rhs) noexcept {
+template <class T, class Allocator>
+bool operator==(const abc::vector<T, Allocator>& lhs,
+                const abc::vector<T, Allocator>& rhs) noexcept {
   auto iter = lhs.begin();
   const auto iend = lhs.end();
   for (const auto& x : rhs) {
@@ -230,9 +223,9 @@ bool operator==(const abc::vector<T>& lhs,
   }
   return iter == iend;
 }
-template <class T>
-bool operator!=(const abc::vector<T>& lhs,
-                const abc::vector<T>& rhs) noexcept {
+template <class T, class Allocator>
+bool operator!=(const abc::vector<T, Allocator>& lhs,
+                const abc::vector<T, Allocator>& rhs) noexcept {
   return !(lhs == rhs);
 }
 
