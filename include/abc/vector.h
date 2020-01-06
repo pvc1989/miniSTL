@@ -30,12 +30,13 @@ class vector {
       : capacity_(count), size_(count), array_(allocator_.allocate(count)) {
     std::uninitialized_fill_n(array_, size_, value);
   }
-  vector(std::initializer_list<T> init) {
-    capacity_ = init.end() - init.begin();
-    size_ = capacity_;
-    array_ = allocator_.allocate(size_);
-    std::uninitialized_copy(init.begin(), init.end(), array_);
+  template<class InputIt>
+  vector(InputIt first, InputIt last)
+      : capacity_(last - first), size_(capacity_),
+        array_(allocator_.allocate(capacity_)) {
+    std::uninitialized_copy(first, last, array_);
   }
+  vector(std::initializer_list<T> init) : vector(init.begin(), init.end()) {}
   vector& operator=(std::initializer_list<T> init) {
     clear();
     size_ = init.end() - init.begin();
@@ -70,10 +71,16 @@ class vector {
   vector(vector&& that) { *this = std::move(that); }
   vector& operator=(vector&& that) {
     if (this != &that) {
-      capacity_ = that.capacity();
+      // clean this:
+      clear();
+      allocator_.deallocate(array_, capacity_);
+      // steal members from that:
       size_ = that.size();
-      array_ = allocator_.allocate(capacity_);
-      std::uninitialized_move(that.begin(), that.end(), array_);
+      that.size_ = 0;
+      capacity_ = that.capacity();
+      that.capacity_ = 0;
+      array_ = that.array_;
+      that.array_ = allocator_.allocate(0);
     }
     return *this;
   }
