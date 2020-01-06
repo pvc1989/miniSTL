@@ -138,13 +138,14 @@ class vector {
   // modifying methods
   void resize(size_type count, const T& value = T()) {
     if (count > capacity_) {
-      auto old_capacity = capacity_;
-      while (capacity_ < count) { capacity_ *= 2; }
-      auto new_array_ = allocator_.allocate(capacity_);
-      std::uninitialized_move(array_, array_+size_, new_array_);
-      std::uninitialized_fill_n(new_array_+size_, count-size_, value);
-      std::swap(new_array_, array_);
-      allocator_.deallocate(new_array_, old_capacity);
+      auto new_capacity = capacity_;
+      while (new_capacity < count) { new_capacity *= 2; }
+      auto new_array = allocator_.allocate(new_capacity);
+      auto p = std::uninitialized_move(begin(), end(), new_array);
+      std::uninitialized_fill_n(p, count - size_, value);
+      allocator_.deallocate(array_, capacity_);
+      array_ = new_array;
+      capacity_ = new_capacity;
     } else if (count > size_) {
       std::uninitialized_fill_n(end(), count - size_, value);
     }
