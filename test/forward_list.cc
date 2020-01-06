@@ -51,9 +51,21 @@ TEST_F(ForwardListTest, PopFront) {
 TEST_F(ForwardListTest, Iterator) {
   for (const auto& i : std_list_of_id) {
     abc_list_of_kitten.emplace_front(i);
+    std_list_of_kitten.emplace_front(i);
   }
+  // construct
+  auto iter = abc_list_of_kitten.begin();
+  EXPECT_EQ(*iter, *std_list_of_kitten.begin());
+  // copy
+  auto iter_copy = iter;
+  EXPECT_EQ(iter, iter_copy);
+  EXPECT_EQ(*iter, *iter_copy);
+  // move
+  auto iter_move = std::move(iter_copy);
+  EXPECT_EQ(iter, iter_move);
+  EXPECT_EQ(*iter, *iter_move);
   // look for an object in the list
-  auto iter = std::find(
+  iter = std::find(
       abc_list_of_kitten.begin(),
       abc_list_of_kitten.end(),
       Kitten(2));
@@ -65,6 +77,16 @@ TEST_F(ForwardListTest, Iterator) {
       abc_list_of_kitten.end(),
       Kitten(-2));
   EXPECT_EQ(iter, abc_list_of_kitten.end());
+}
+TEST_F(ForwardListTest, RangeFor) {
+  for (const auto& i : std_list_of_id) {
+    abc_list_of_kitten.emplace_front(i);
+    std_list_of_kitten.emplace_front(i);
+  }
+  auto iter = std_list_of_kitten.begin();
+  for (auto& x : abc_list_of_kitten) {
+    EXPECT_EQ(x, *iter++);
+  }
 }
 TEST_F(ForwardListTest, EmplaceAfter) {
   for (const auto& i : std_list_of_id) {
