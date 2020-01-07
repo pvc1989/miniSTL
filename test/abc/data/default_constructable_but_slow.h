@@ -1,7 +1,7 @@
 // Copyright 2020 Weicheng Pei
 
-#ifndef ABC_DATA_DEFAULT_CONSTRUCTABLE_BUT_SLOW_H_
-#define ABC_DATA_DEFAULT_CONSTRUCTABLE_BUT_SLOW_H_
+#ifndef TEST_ABC_DATA_DEFAULT_CONSTRUCTABLE_BUT_SLOW_H_
+#define TEST_ABC_DATA_DEFAULT_CONSTRUCTABLE_BUT_SLOW_H_
 
 namespace abc {
 namespace data {
@@ -19,4 +19,4 @@ class DefaultConstructableButSlow {
 }  // namespace data
 }  // namespace abc
 
-#endif  // ABC_DATA_DEFAULT_CONSTRUCTABLE_BUT_SLOW_H_
+#endif  // TEST_ABC_DATA_DEFAULT_CONSTRUCTABLE_BUT_SLOW_H_
