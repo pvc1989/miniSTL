@@ -214,6 +214,7 @@ class vector {
     capacity_ = new_capacity;
   }
 };
+// static member
 template <class T, class Allocator>
 Allocator vector<T, Allocator>::allocator_;
 
