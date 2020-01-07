@@ -216,7 +216,7 @@ class vector {
   }
 };
 template <class T, class Allocator>
-Allocator vector<T, Allocator>::allocator_;
+Allocator vector<T, Allocator>::allocator_;  // NOLINT
 
 }  // namespace abc
 
