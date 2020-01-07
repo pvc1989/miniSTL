@@ -110,7 +110,6 @@ class vector {
   // non-modifying methods
   bool empty() const noexcept {
     return size_ == 0;
-    // return begin() == end();
   }
   reference front() { return array_[0]; }
   reference back() { return array_[size_ - 1]; }
