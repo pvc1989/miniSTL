@@ -14,6 +14,8 @@ cmake -S .. -B .  # cmake 3.13.5+
 cmake --build .
 ./test/forward_list
 ./test/vector
+ctest    # run all tests, print compact info
+ctest -V # run all tests, print verbose info
 ```
 
 ## Code Style
