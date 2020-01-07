@@ -111,23 +111,23 @@ class vector {
   bool empty() const noexcept {
     return size_ == 0;
   }
-  reference front() { return array_[0]; }
-  reference back() { return array_[size_ - 1]; }
-  size_type size() const { return size_; }
-  size_type capacity() const { return capacity_; }
+  reference front() noexcept { return at(0); }
+  reference back() noexcept { return at(size_ - 1); }
+  size_type size() const noexcept { return size_; }
+  size_type capacity() const noexcept { return capacity_; }
   T& operator[] (size_type pos) {
     return array_[pos];
   }
-  const T& operator[] (size_type pos) const {
+  const T& operator[] (size_type pos) const noexcept {
     return array_[pos];
   }
-  T& at(size_type pos) {
+  T& at(size_type pos) noexcept {
     if (pos >= size_) {
       std::out_of_range("Out of range!");
     }
     return array_[pos];
   }
-  const T& at(size_type pos) const {
+  const T& at(size_type pos) const noexcept {
     if (pos >= size_) {
       std::out_of_range("Out of range!");
     }
