@@ -173,7 +173,7 @@ class vector {
     allocator_.construct(array_ + size_++, std::move(value));
   }
   void pop_back() {
-    size_--;
+    --size_;
     if (size_ > 0 && size_ <= capacity_/4) {
       shrink();
     }
