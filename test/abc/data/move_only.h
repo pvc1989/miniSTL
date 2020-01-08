@@ -1,7 +1,7 @@
 // Copyright 2020 Weicheng Pei
 
-#ifndef ABC_DATA_MOVE_ONLY_H_
-#define ABC_DATA_MOVE_ONLY_H_
+#ifndef TEST_ABC_DATA_MOVE_ONLY_H_
+#define TEST_ABC_DATA_MOVE_ONLY_H_
 
 #include <memory>
 
@@ -36,4 +36,4 @@ class MoveOnly : public DefaultConstructableButSlow {
 }  // namespace data
 }  // namespace abc
 
-#endif  // ABC_DATA_MOVE_ONLY_H_
+#endif  // TEST_ABC_DATA_MOVE_ONLY_H_
