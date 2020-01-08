@@ -111,29 +111,28 @@ class vector {
   bool empty() const noexcept {
     return size_ == 0;
   }
-  reference front() { return at(0); }
-  reference back() { return at(size_ - 1); }
   size_type size() const noexcept { return size_; }
   size_type capacity() const noexcept { return capacity_; }
-  T& operator[] (size_type pos) {
-    return array_[pos];
-  }
-  const T& operator[] (size_type pos) const noexcept {
-    return array_[pos];
-  }
-  T& at(size_type pos) {
+  // element accessors (without check)
+  reference operator[] (size_type pos) { return array_[pos]; }
+  const_reference operator[] (size_type pos) const { return array_[pos]; }
+  reference front() { return array_[0]; }
+  const_reference front() const { return array_[0]; }
+  reference back() { return array_[size_ - 1]; }
+  const_reference back() const { return array_[size_ - 1]; }
+  // element accessors (with check)
+  reference at(size_type pos) {
     if (pos >= size_) {
       throw std::out_of_range("The given index is illegal!");
     }
     return array_[pos];
   }
-  const T& at(size_type pos) const {
+  const_reference at(size_type pos) const {
     if (pos >= size_) {
       throw std::out_of_range("The given index is illegal!");
     }
     return array_[pos];
   }
-
   // modifying methods
   void resize(size_type count, const T& value = T()) {
     if (count > capacity_) {
