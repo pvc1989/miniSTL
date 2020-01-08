@@ -124,12 +124,14 @@ class vector {
   T& at(size_type pos) noexcept {
     if (pos >= size_) {
       std::out_of_range("Out of range!");
+      throw std::out_of_range();
     }
     return array_[pos];
   }
   const T& at(size_type pos) const noexcept {
     if (pos >= size_) {
       std::out_of_range("Out of range!");
+      throw std::out_of_range();
     }
     return array_[pos];
   }
