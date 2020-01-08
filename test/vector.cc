@@ -8,7 +8,7 @@
 #include "abc/data/copyable.h"
 #include "gtest/gtest.h"
 
-class VectorTest : public ::testing::Test {
+class TestVector : public ::testing::Test {
  protected:
   // helper class
   using Kitten = abc::data::Copyable;
@@ -30,24 +30,24 @@ class VectorTest : public ::testing::Test {
     }
   }
 };
-TEST_F(VectorTest, ConstructorDefault) {
-  // `VectorTest`'s members will be re-constructed before each `TEST_F`.
+TEST_F(TestVector, ConstructorDefault) {
+  // `TestVector`'s members will be re-constructed before each `TEST_F`.
   ExpectEqual();
 }
-TEST_F(VectorTest, ConstructorWithSize) {
+TEST_F(TestVector, ConstructorWithSize) {
   auto size = 73;
   abc_vector_of_kitten = abc::vector<Kitten>(size);
   std_vector_of_kitten = std::vector<Kitten>(size);
   ExpectEqual();
 }
-TEST_F(VectorTest, ConstructorWithSizeAndValue) {
+TEST_F(TestVector, ConstructorWithSizeAndValue) {
   auto size = 73;
   auto value = Kitten(size);
   abc_vector_of_kitten = abc::vector<Kitten>(size, value);
   std_vector_of_kitten = std::vector<Kitten>(size, value);
   ExpectEqual();
 }
-TEST_F(VectorTest, ConstructorWithInitializerList) {
+TEST_F(TestVector, ConstructorWithInitializerList) {
   auto list = { Kitten{1}, Kitten{2}, Kitten{3} };
   abc_vector_of_kitten = abc::vector<Kitten>(list);
   std_vector_of_kitten = std::vector<Kitten>(list);
@@ -56,21 +56,21 @@ TEST_F(VectorTest, ConstructorWithInitializerList) {
   std_vector_of_kitten = std::vector<Kitten>{ Kitten{1}, Kitten{2}, Kitten{3} };
   ExpectEqual();
 }
-TEST_F(VectorTest, EmplaceBack) {
+TEST_F(TestVector, EmplaceBack) {
   for (auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
     abc_vector_of_kitten.emplace_back(i);
     ExpectEqual();
   }
 }
-TEST_F(VectorTest, PushBack) {
+TEST_F(TestVector, PushBack) {
   for (auto& i : std_vector_of_id) {
     std_vector_of_kitten.push_back(Kitten(i));
     abc_vector_of_kitten.push_back(Kitten(i));
     ExpectEqual();
   }
 }
-TEST_F(VectorTest, FrontAndBack) {
+TEST_F(TestVector, FrontAndBack) {
   for (const auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
     abc_vector_of_kitten.emplace_back(i);
@@ -80,7 +80,7 @@ TEST_F(VectorTest, FrontAndBack) {
               std_vector_of_kitten.back());
   }
 }
-TEST_F(VectorTest, Resize) {
+TEST_F(TestVector, Resize) {
   for (int i = 0; i != 37; ++i) {
     std_vector_of_kitten.emplace_back(i);
     abc_vector_of_kitten.emplace_back(i);
@@ -103,7 +103,7 @@ TEST_F(VectorTest, Resize) {
   abc_vector_of_kitten.resize(0);
   ExpectEqual();
 }
-TEST_F(VectorTest, PopBack) {
+TEST_F(TestVector, PopBack) {
   for (const auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
     abc_vector_of_kitten.emplace_back(i);
@@ -117,7 +117,7 @@ TEST_F(VectorTest, PopBack) {
     abc_vector_of_kitten.pop_back();
   }
 }
-TEST_F(VectorTest, At) {
+TEST_F(TestVector, At) {
   int j = 0;
   for (const auto& i : std_vector_of_id) {
     std_vector_of_kitten.emplace_back(i);
@@ -127,7 +127,7 @@ TEST_F(VectorTest, At) {
     j++;
   }
 }
-TEST_F(VectorTest, BeginAndEnd) {
+TEST_F(TestVector, BeginAndEnd) {
   for (const auto& i : std_vector_of_id) {
     abc_vector_of_kitten.emplace_back(i);
     std_vector_of_kitten.emplace_back(i);
@@ -141,7 +141,7 @@ TEST_F(VectorTest, BeginAndEnd) {
     ++iter_std;
   }
 }
-TEST_F(VectorTest, RangeFor) {
+TEST_F(TestVector, RangeFor) {
   for (const auto& i : std_vector_of_id) {
     abc_vector_of_kitten.emplace_back(i);
     std_vector_of_kitten.emplace_back(i);
@@ -151,7 +151,7 @@ TEST_F(VectorTest, RangeFor) {
     EXPECT_EQ(x, *iter++);
   }
 }
-TEST_F(VectorTest, Iterator) {
+TEST_F(TestVector, Iterator) {
   for (const auto& i : std_vector_of_id) {
     abc_vector_of_kitten.emplace_back(i);
   }
@@ -169,7 +169,7 @@ TEST_F(VectorTest, Iterator) {
       Kitten(-2));
   EXPECT_EQ(iter, abc_vector_of_kitten.end());
 }
-TEST_F(VectorTest, Equal) {
+TEST_F(TestVector, Equal) {
   auto new_vector_of_kitten = decltype(abc_vector_of_kitten)();
   for (const auto& i : std_vector_of_id) {
     abc_vector_of_kitten.emplace_back(i);
@@ -180,7 +180,7 @@ TEST_F(VectorTest, Equal) {
   EXPECT_FALSE(abc_vector_of_kitten != abc_vector_of_kitten);
   EXPECT_FALSE(new_vector_of_kitten != abc_vector_of_kitten);
 }
-TEST_F(VectorTest, Swap) {
+TEST_F(TestVector, Swap) {
   auto list_a = {1, 2, 3, 4};
   auto list_b = {5, 6};
   auto a = abc::vector<int>(list_a);
@@ -197,7 +197,7 @@ TEST_F(VectorTest, Swap) {
   EXPECT_EQ(b.capacity(), size_a);
   EXPECT_EQ(b.back(), end_of_a);
 }
-TEST_F(VectorTest, Performance) {
+TEST_F(TestVector, Performance) {
   using clock = std::chrono::high_resolution_clock;
   auto ticks = [](auto& vector) {
     auto start = clock::now();
