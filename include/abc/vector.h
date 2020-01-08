@@ -111,8 +111,8 @@ class vector {
   bool empty() const noexcept {
     return size_ == 0;
   }
-  reference front() noexcept { return at(0); }
-  reference back() noexcept { return at(size_ - 1); }
+  reference front() { return at(0); }
+  reference back() { return at(size_ - 1); }
   size_type size() const noexcept { return size_; }
   size_type capacity() const noexcept { return capacity_; }
   T& operator[] (size_type pos) {
@@ -121,15 +121,15 @@ class vector {
   const T& operator[] (size_type pos) const noexcept {
     return array_[pos];
   }
-  T& at(size_type pos) noexcept {
+  T& at(size_type pos) {
     if (pos >= size_) {
-      std::out_of_range("Out of range!");
+      throw std::out_of_range();
     }
     return array_[pos];
   }
-  const T& at(size_type pos) const noexcept {
+  const T& at(size_type pos) const {
     if (pos >= size_) {
-      std::out_of_range("Out of range!");
+      throw std::out_of_range();
     }
     return array_[pos];
   }
