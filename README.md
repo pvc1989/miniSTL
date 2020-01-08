@@ -12,16 +12,18 @@ mkdir build
 cd build
 cmake -S .. -B .  # cmake 3.13.5+
 cmake --build .
+# Run each test one after another:
 ./test/forward_list
 ./test/vector
-ctest    # run all tests, print compact info
-ctest -V # run all tests, print verbose info
+# Run all tests:
+ctest    # print compact info
+ctest -V # print verbose info
 ```
 
 ## Code Style
 We use [`cpplint.py`](./cpplint.py) to detect style errors:
 ```shell
 cd miniSTL
-python cpplint.py include/abc/*.h test/*.cc
+python cpplint.py include/abc/*.h test/abc/data/*.h  test/*.cc
 ```
 Read [***Google C++ Style Guide***](https://google.github.io/styleguide/cppguide.html) for more details.
