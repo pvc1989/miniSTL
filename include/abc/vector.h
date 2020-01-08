@@ -123,13 +123,13 @@ class vector {
   }
   T& at(size_type pos) {
     if (pos >= size_) {
-      throw std::out_of_range();
+      throw std::out_of_range("The given index is illegal!");
     }
     return array_[pos];
   }
   const T& at(size_type pos) const {
     if (pos >= size_) {
-      throw std::out_of_range();
+      throw std::out_of_range("The given index is illegal!");
     }
     return array_[pos];
   }
