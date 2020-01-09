@@ -14,7 +14,7 @@
 
 namespace abc {
 
-template <class T>
+template <class T, class Allocator = std::allocator<T>>
 class vector {
  public:
   using size_type = std::size_t;
@@ -25,50 +25,45 @@ class vector {
 
  public:
   // construction
-  vector() : capacity_(0), size_(0), array_(new T[0]) {}
-  explicit vector(size_type count) : capacity_(count), size_(count),
-                                     array_(new T[count]) {}
-  explicit vector(size_type count, const T& value) : capacity_(count),
-                                                     size_(count),
-                                                     array_(new T[count]) {
-    for (int i = 0; i < size_; i++) {
-      array_[i] = value;
-    }
+  vector() = default;
+  explicit vector(size_type count, const T& value = T())
+      : capacity_(count), size_(count), array_(allocator_.allocate(count)) {
+    std::uninitialized_fill_n(array_, size_, value);
   }
-  vector(std::initializer_list<T> init) {
-    capacity_ = init.end() - init.begin();
-    size_ = capacity_;
-    array_ = std::make_unique<T[]>(size_);
-    auto iter = init.begin();
-    for (int i = 0; i < size_; i++) {
-      array_[i] = *iter;
-      iter++;
-    }
+  template<class InputIt>
+  vector(InputIt first, InputIt last)
+      : capacity_(last - first), size_(capacity_),
+        array_(allocator_.allocate(capacity_)) {
+    std::uninitialized_copy(first, last, array_);
   }
+  vector(std::initializer_list<T> init) : vector(init.begin(), init.end()) {}
   vector& operator=(std::initializer_list<T> init) {
+    clear();
     size_ = init.end() - init.begin();
-    capacity_ = std::max(size_, capacity_);
-    array_ = std::make_unique<T[]>(size_);
-    auto iter = init.begin();
-    for (int i = 0; i < size_; i++) {
-      array_[i] = *iter;
-      iter++;
+    if (size_ > capacity_) {
+      allocator_.deallocate(array_, capacity_);
+      capacity_ = size_;
+      array_ = allocator_.allocate(capacity_);
     }
+    std::uninitialized_copy(init.begin(), init.end(), array_);
     return *this;
   }
   // destruction
-  ~vector() noexcept { clear(); }
+  ~vector() noexcept {
+    clear();
+    allocator_.deallocate(array_, capacity_);
+  }
   // copy operations:
   vector(const vector& that) { *this = that; }
   vector& operator=(const vector& that) {
     if (this != &that) {
       clear();
-      capacity_ = that.capacity();
-      size_ = that.size();
-      array_ = std::make_unique<T[]>(size_);
-      for (int i = 0; i < size_; i++) {
-        array_[i] = that[i];
+      if (capacity_ != that.capacity()) {
+        allocator_.deallocate(array_, capacity_);
+        capacity_ = that.capacity();
       }
+      size_ = that.size();
+      std::uninitialized_copy(that.begin(), that.end(), array_);
     }
     return *this;
   }
@@ -76,30 +71,38 @@ class vector {
   vector(vector&& that) { *this = std::move(that); }
   vector& operator=(vector&& that) {
     if (this != &that) {
+      // clean this:
       clear();
-      capacity_ = that.capacity();
+      allocator_.deallocate(array_, capacity_);
+      // steal members from that:
       size_ = that.size();
-      array_.swap(that.array_);
+      that.size_ = 0;
+      capacity_ = that.capacity();
+      that.capacity_ = 0;
+      array_ = that.array_;
+      that.array_ = allocator_.allocate(0);
     }
     return *this;
   }
 
- private:
-  size_type capacity_;
-  size_type size_;
-  std::unique_ptr<T[]> array_;
+ private:  // Data members:
+  // Don't change the order of these members!
+  size_type capacity_{0};
+  size_type size_{0};
+  T* array_{allocator_.allocate(0)};
+  static Allocator allocator_;
 
  public:
   // iterator and related methods
   using iterator = pointer;
 
-  iterator begin() noexcept { return array_.get(); };
-  iterator end() noexcept { return array_.get()+size_; }
+  iterator begin() noexcept { return array_; };
+  iterator end() noexcept { return array_ + size_; }
 
   using const_iterator = const_pointer;
 
-  const_iterator cbegin() const noexcept { return array_.get(); };
-  const_iterator cend() const noexcept { return array_.get()+size_; }
+  const_iterator cbegin() const noexcept { return array_; };
+  const_iterator cend() const noexcept { return array_ + size_; }
 
   const_iterator begin() const noexcept { return cbegin(); };
   const_iterator end() const noexcept { return cend(); }
@@ -107,52 +110,44 @@ class vector {
   // non-modifying methods
   bool empty() const noexcept {
     return size_ == 0;
-    // return begin() == end();
   }
+  size_type size() const noexcept { return size_; }
+  size_type capacity() const noexcept { return capacity_; }
+  // element accessors (without check)
+  reference operator[] (size_type pos) { return array_[pos]; }
+  const_reference operator[] (size_type pos) const { return array_[pos]; }
   reference front() { return array_[0]; }
+  const_reference front() const { return array_[0]; }
   reference back() { return array_[size_ - 1]; }
-  size_type size() const { return size_; }
-  size_type capacity() const { return capacity_; }
-  T& operator[] (size_type pos) {
-    return array_[pos];
-  }
-  const T& operator[] (size_type pos) const {
-    return array_[pos];
-  }
-  T& at(size_type pos) {
+  const_reference back() const { return array_[size_ - 1]; }
+  // element accessors (with check)
+  reference at(size_type pos) {
     if (pos >= size_) {
-      std::out_of_range("Out of range!");
+      throw std::out_of_range("The given index is illegal!");
     }
     return array_[pos];
   }
-  const T& at(size_type pos) const {
+  const_reference at(size_type pos) const {
     if (pos >= size_) {
-      std::out_of_range("Out of range!");
+      throw std::out_of_range("The given index is illegal!");
     }
     return array_[pos];
   }
-
   // modifying methods
-  void resize(size_type count, const T& value) {
+  void resize(size_type count, const T& value = T()) {
     if (count > capacity_) {
-      while (capacity_ < count) { capacity_ *= 2; }
-      auto new_array_ = std::make_unique<T[]>(capacity_);
-      for (int i = size_; i < count; i++) {
-        new_array_[i] = value;
-      }
-      for (int i = 0; i < size_; i++) {
-        std::swap(new_array_[i], array_[i]);
-      }
-      array_.swap(new_array_);
+      auto new_capacity = capacity_;
+      while (new_capacity < count) { new_capacity *= 2; }
+      auto new_array = allocator_.allocate(new_capacity);
+      auto p = std::uninitialized_move(begin(), end(), new_array);
+      std::uninitialized_fill_n(p, count - size_, value);
+      allocator_.deallocate(array_, capacity_);
+      array_ = new_array;
+      capacity_ = new_capacity;
     } else if (count > size_) {
-      for (int i = size_; i < count; i++) {
-        array_[i] = value;
-      }
+      std::uninitialized_fill_n(end(), count - size_, value);
     }
     size_ = count;
-  }
-  void resize(size_type count) {
-    resize(count, T());
   }
   template <class... Args>
   void emplace_back(Args&&... args) {
@@ -160,66 +155,73 @@ class vector {
       enlarge();
     }
     assert(size() < capacity());
-    array_[size_++] = T(std::forward<Args>(args)...);
+    allocator_.construct(array_ + size_++, std::forward<Args>(args)...);
   }
   void push_back(const T& value) {
     if (size() == capacity()) {
       enlarge();
     }
     assert(size() < capacity());
-    array_[size_++] = value;
+    allocator_.construct(array_ + size_++, value);
   }
   void push_back(T&& value) {
     if (size() == capacity()) {
       enlarge();
     }
     assert(size() < capacity());
-    array_[size_++] = std::move(value);
+    allocator_.construct(array_ + size_++, std::move(value));
   }
-  void pop_back() noexcept {
-    size_--;
+  void pop_back() {
+    --size_;
     if (size_ > 0 && size_ <= capacity_/4) {
       shrink();
     }
   }
   void clear() noexcept {
+    for (int i = 0; i < size_; i++) {
+      allocator_.destroy(array_ + i);
+    }
     size_ = 0;
-    array_.reset(new T[0]);
   }
-  void swap(vector& other) {
+  void swap(vector& other) noexcept {
     std::swap(size_, other.size_);
     std::swap(capacity_, other.capacity_);
-    array_.swap(other.array_);
+    std::swap(array_, other.array_);
   }
 
  private:
   void enlarge() {
+    auto new_capacity = capacity_;
     if (size_ == 0) {
-      capacity_ = 1;
+      new_capacity = 1;
     } else {
-      capacity_ = size_ * 2;
+      new_capacity = size_ * 2;
     }
-    auto new_array_ = std::make_unique<T[]>(capacity_);
-    for (int i = 0; i < size_; i++) {
-      std::swap(new_array_[i], array_[i]);
-    }
-    array_.swap(new_array_);
+    auto new_array = allocator_.allocate(new_capacity);
+    std::uninitialized_move(begin(), end(), new_array);
+    allocator_.deallocate(array_, capacity_);
+    array_ = new_array;
+    capacity_ = new_capacity;
   }
   void shrink() {
-    capacity_ /= 2;
-    auto new_array_ = std::make_unique<T[]>(capacity_);
-    for (int i = 0; i < size_; i++) {
-      std::swap(new_array_[i], array_[i]);
-    }
-    array_.swap(new_array_);
+    auto new_capacity = capacity_;
+    new_capacity /= 2;
+    auto new_array = allocator_.allocate(new_capacity);
+    std::uninitialized_move(begin(), end(), new_array);
+    allocator_.deallocate(array_, capacity_);
+    array_ = new_array;
+    capacity_ = new_capacity;
   }
 };
+// static member
+template <class T, class Allocator>
+Allocator vector<T, Allocator>::allocator_;  // NOLINT
 
 }  // namespace abc
 
-template <class T>
-bool operator==(const abc::vector<T>& lhs,
-                const abc::vector<T>& rhs) noexcept {
+template <class T, class Allocator>
+bool operator==(const abc::vector<T, Allocator>& lhs,
+                const abc::vector<T, Allocator>& rhs) noexcept {
   auto iter = lhs.begin();
   const auto iend = lhs.end();
   for (const auto& x : rhs) {
@@ -231,9 +233,9 @@ bool operator==(const abc::vector<T>& lhs,
   }
   return iter == iend;
 }
-template <class T>
-bool operator!=(const abc::vector<T>& lhs,
-                const abc::vector<T>& rhs) noexcept {
+template <class T, class Allocator>
+bool operator!=(const abc::vector<T, Allocator>& lhs,
+                const abc::vector<T, Allocator>& rhs) noexcept {
   return !(lhs == rhs);
 }
 
