@@ -1,4 +1,5 @@
-// Copyright abc
+// Copyright 2020 Yu Kainan
+
 #include "abc/list.h"
 #include <algorithm>
 #include <chrono>
