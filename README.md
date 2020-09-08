@@ -7,10 +7,11 @@ The intention is not to challenge those industrial-strength implementations, but
 ## Build
 ```shell
 git clone https://github.com/pvcStillInGradSchool/miniSTL.git
+git submodule update --init --recursive
 cd miniSTL
-mkdir build
-cd build
-cmake -S .. -B .  # cmake 3.13.5+
+mkdir -p build/Debug
+cd build/Debug
+cmake -D CMAKE_BUILD_TYPE=Debug -G Ninja -S ../.. -B .  # cmake 3.13.5+
 cmake --build .
 # Run each test one after another:
 ./test/forward_list
