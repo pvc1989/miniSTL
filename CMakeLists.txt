@@ -3,6 +3,9 @@ project(miniSTL)
 set(CMAKE_CXX_STANDARD 17)
 
 option(${PROJECT_NAME}_SUBMODULE_GOOGLETEST "Add GoogleTest as a git submodule." "ON")
+# Prevent overriding the parent project's compiler/linker
+# settings on Windows
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 if (${PROJECT_NAME}_SUBMODULE_GOOGLETEST)
   add_subdirectory(test/googletest)
 else (${PROJECT_NAME}_SUBMODULE_GOOGLETEST)
@@ -20,16 +23,11 @@ else (${PROJECT_NAME}_SUBMODULE_GOOGLETEST)
   if (result)
     message(FATAL_ERROR "Build step for googletest failed: ${result}")
   endif ()
-
-  # Prevent overriding the parent project's compiler/linker
-  # settings on Windows
-  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
   # Add googletest directly to our build. This defines
   # the gtest and gtest_main targets.
   add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest/src
-                  ${CMAKE_CURRENT_BINARY_DIR}/googletest/build
-                  EXCLUDE_FROM_ALL)
+                   ${CMAKE_CURRENT_BINARY_DIR}/googletest/build
+                   EXCLUDE_FROM_ALL)
 
   # The gtest/gtest_main targets carry header search path
   # dependencies automatically when using CMake 2.8.11 or
