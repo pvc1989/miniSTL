@@ -11,14 +11,19 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
     - uses: actions/checkout@v2
+      with:
+        # Whether to checkout submodules: `true` to checkout submodules or `recursive` to
+        # recursively checkout submodules.
+        #
+        # When the `ssh-key` input is not provided, SSH URLs beginning with
+        # `git@github.com:` are converted to HTTPS.
+        #
+        # Default: false
+        submodules: 'recursive'
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
       # We'll use this as our working directory for all subsequent commands
       run: cmake -E make_directory ${{runner.workspace}}/build
-    - name: Submodule Checkout
-      # You may pin to the exact commit or the version.
-      # uses: jwsi/submodule-checkout@428791ee676835d4c6cb9998b38977c5c89fba46
-      uses: jwsi/submodule-checkout@v1
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
       # access regardless of the host operating system
