@@ -68,8 +68,10 @@ class vector {
     return *this;
   }
   // move operations:
-  vector(vector&& that) { *this = std::move(that); }
-  vector& operator=(vector&& that) {
+  vector(vector&& that) noexcept {
+    *this = abc::move(that);
+  }
+  vector& operator=(vector&& that) noexcept {
     if (this != &that) {
       // clean this:
       clear();

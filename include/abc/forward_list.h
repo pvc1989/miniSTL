@@ -45,8 +45,10 @@ class forward_list {
     return *this;
   }
   // move operations:
-  forward_list(forward_list&& that) { *this = abc::move(that); }
-  forward_list& operator=(forward_list&& that) {
+  forward_list(forward_list&& that) noexcept {
+    *this = abc::move(that);
+  }
+  forward_list& operator=(forward_list&& that) noexcept {
     if (this != &that) {
       clear();
       std::swap(this->ptr_head_, that.ptr_head_);
