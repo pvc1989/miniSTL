@@ -18,15 +18,15 @@ template <class T, class Allocator = std::allocator<T>>
 class vector {
  public:
   using size_type = std::size_t;
-  using reference = T&;
-  using const_reference = const T&;
-  using pointer = T*;
-  using const_pointer = const T*;
+  using reference = T &;
+  using const_reference = const T &;
+  using pointer = T *;
+  using const_pointer = const T *;
 
  public:
   // construction
   vector() = default;
-  explicit vector(size_type count, const T& value = T())
+  explicit vector(size_type count, const T &value = T())
       : capacity_(count), size_(count), array_(allocator_.allocate(count)) {
     std::uninitialized_fill_n(array_, size_, value);
   }
@@ -37,7 +37,7 @@ class vector {
     std::uninitialized_copy(first, last, array_);
   }
   vector(std::initializer_list<T> init) : vector(init.begin(), init.end()) {}
-  vector& operator=(std::initializer_list<T> init) {
+  vector &operator=(std::initializer_list<T> init) {
     clear();
     size_ = init.end() - init.begin();
     if (size_ > capacity_) {
@@ -54,8 +54,8 @@ class vector {
     allocator_.deallocate(array_, capacity_);
   }
   // copy operations:
-  vector(const vector& that) { *this = that; }
-  vector& operator=(const vector& that) {
+  vector(const vector &that) { *this = that; }
+  vector &operator=(const vector &that) {
     if (this != &that) {
       clear();
       if (capacity_ != that.capacity()) {
@@ -68,10 +68,10 @@ class vector {
     return *this;
   }
   // move operations:
-  vector(vector&& that) noexcept {
+  vector(vector &&that) noexcept {
     *this = abc::move(that);
   }
-  vector& operator=(vector&& that) noexcept {
+  vector &operator=(vector &&that) noexcept {
     if (this != &that) {
       // clean this:
       clear();
@@ -91,7 +91,7 @@ class vector {
   // Don't change the order of these members!
   size_type capacity_{0};
   size_type size_{0};
-  T* array_{allocator_.allocate(0)};
+  T *array_{allocator_.allocate(0)};
   static Allocator allocator_;
 
  public:
@@ -136,7 +136,7 @@ class vector {
     return array_[pos];
   }
   // modifying methods
-  void resize(size_type count, const T& value = T()) {
+  void resize(size_type count, const T &value = T()) {
     if (count > capacity_) {
       auto new_capacity = capacity_;
       while (new_capacity < count) { new_capacity *= 2; }
@@ -159,14 +159,14 @@ class vector {
     assert(size() < capacity());
     allocator_.construct(array_ + size_++, std::forward<Args>(args)...);
   }
-  void push_back(const T& value) {
+  void push_back(const T &value) {
     if (size() == capacity()) {
       enlarge();
     }
     assert(size() < capacity());
     allocator_.construct(array_ + size_++, value);
   }
-  void push_back(T&& value) {
+  void push_back(T &&value) {
     if (size() == capacity()) {
       enlarge();
     }
@@ -185,7 +185,7 @@ class vector {
     }
     size_ = 0;
   }
-  void swap(vector& other) noexcept {
+  void swap(vector &other) noexcept {
     std::swap(size_, other.size_);
     std::swap(capacity_, other.capacity_);
     std::swap(array_, other.array_);
@@ -222,11 +222,11 @@ Allocator vector<T, Allocator>::allocator_;  // NOLINT
 }  // namespace abc
 
 template <class T, class Allocator>
-bool operator==(const abc::vector<T, Allocator>& lhs,
-                const abc::vector<T, Allocator>& rhs) noexcept {
+bool operator==(const abc::vector<T, Allocator> &lhs,
+                const abc::vector<T, Allocator> &rhs) noexcept {
   auto iter = lhs.begin();
   const auto iend = lhs.end();
-  for (const auto& x : rhs) {
+  for (const auto &x : rhs) {
     if (iter == iend || *iter != x) {
       return false;
     } else {
@@ -236,8 +236,8 @@ bool operator==(const abc::vector<T, Allocator>& lhs,
   return iter == iend;
 }
 template <class T, class Allocator>
-bool operator!=(const abc::vector<T, Allocator>& lhs,
-                const abc::vector<T, Allocator>& rhs) noexcept {
+bool operator!=(const abc::vector<T, Allocator> &lhs,
+                const abc::vector<T, Allocator> &rhs) noexcept {
   return !(lhs == rhs);
 }
 
