@@ -24,8 +24,8 @@ class forward_list {
   forward_list() = default;
   ~forward_list() noexcept { clear(); }
   // copy operations:
-  forward_list(const forward_list& that) { *this = that; }
-  forward_list& operator=(const forward_list& that) {
+  forward_list(const forward_list &that) { *this = that; }
+  forward_list &operator=(const forward_list &that) {
     if (this != &that) {
       clear();
       auto iter_of_that = that.begin();
@@ -45,10 +45,10 @@ class forward_list {
     return *this;
   }
   // move operations:
-  forward_list(forward_list&& that) noexcept {
+  forward_list(forward_list &&that) noexcept {
     *this = abc::move(that);
   }
-  forward_list& operator=(forward_list&& that) noexcept {
+  forward_list &operator=(forward_list &&that) noexcept {
     if (this != &that) {
       clear();
       std::swap(this->ptr_head_, that.ptr_head_);
@@ -81,7 +81,7 @@ class forward_list {
     template <class... Args>
     explicit Node(Args&&... args) : value(abc::forward<Args>(args)...) { }
     template <class... Args>
-    explicit Node(Node* ptr_node, Args&&... args)
+    explicit Node(Node *ptr_node, Args&&... args)
       : ptr_next(ptr_node), value(abc::forward<Args>(args)...) { }
   };
 
@@ -117,18 +117,18 @@ class forward_list {
       std::forward_iterator_tag, forward_list::value_type> {
     friend forward_list;
    protected:
-    Node* ptr_node{ nullptr };
+    Node *ptr_node{ nullptr };
    public:
-    explicit iterator(Node* ptr_node) noexcept : ptr_node(ptr_node) { }
+    explicit iterator(Node *ptr_node) noexcept : ptr_node(ptr_node) { }
     reference operator*() const noexcept { return ptr_node->value; }
     pointer operator->() const noexcept { return &this->operator*(); }
-    bool operator==(iterator const& rhs) const noexcept {
+    bool operator==(iterator const &rhs) const noexcept {
       return ptr_node == rhs.ptr_node;
     }
-    bool operator!=(iterator const& rhs) const noexcept {
+    bool operator!=(iterator const &rhs) const noexcept {
       return !(*this == rhs);
     }
-    iterator& operator++() noexcept {
+    iterator &operator++() noexcept {
       ptr_node = &(*(ptr_node->ptr_next));
       return *this;
     }
@@ -143,7 +143,7 @@ class forward_list {
    public:
     using reference = typename forward_list::const_reference;
     using pointer = typename forward_list::const_pointer;
-    explicit const_iterator(Node* ptr_node) noexcept : iterator(ptr_node) { }
+    explicit const_iterator(Node *ptr_node) noexcept : iterator(ptr_node) { }
     reference operator*() const noexcept { return this->iterator::operator*(); }
     pointer operator->() const noexcept { return this->iterator::operator->(); }
   };  // const_iterator
@@ -160,13 +160,13 @@ class forward_list {
   template <class... Args>
   iterator emplace_after(iterator iter, Args&&... args) {
 #ifdef ABC_USE_SMART_POINTER_
-    auto& ptr_next = iter.ptr_node->ptr_next;
+    auto &ptr_next = iter.ptr_node->ptr_next;
     auto ptr_new = std::make_unique<Node>(
       ptr_next.release()/* raw pointer of the old head */,
       abc::forward<Args>(args).../* arguments for value */);
     ptr_next.reset(ptr_new.release());
 #else
-    auto& ptr_next = iter.ptr_node->ptr_next;
+    auto &ptr_next = iter.ptr_node->ptr_next;
     auto ptr_new = new Node(ptr_next, abc::forward<Args>(args)...);  // NOLINT
     ptr_next = ptr_new;
 #endif
@@ -175,11 +175,11 @@ class forward_list {
 };  // forward_list
 
 template <class T>
-bool operator==(const forward_list<T>& lhs,
-                const forward_list<T>& rhs) noexcept {
+bool operator==(const forward_list<T> &lhs,
+                const forward_list<T> &rhs) noexcept {
   auto iter = lhs.begin();
   const auto iend = lhs.end();
-  for (const auto& x : rhs) {
+  for (const auto &x : rhs) {
     if (iter == iend || *iter != x) {
       return false;
     } else {
@@ -189,8 +189,8 @@ bool operator==(const forward_list<T>& lhs,
   return iter == iend;
 }
 template <class T>
-bool operator!=(const forward_list<T>& lhs,
-                const forward_list<T>& rhs) noexcept {
+bool operator!=(const forward_list<T> &lhs,
+                const forward_list<T> &rhs) noexcept {
   return !(lhs == rhs);
 }
 
